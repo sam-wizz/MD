@@ -3,6 +3,7 @@ import { db, invoiceAnalysesTable, supplierPricesTable, profilesTable } from "@w
 import { eq, desc } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
 import { openai } from "@workspace/integrations-openai-ai-server";
+import { AI_MODEL } from "../lib/ai";
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.post("/analyze", requireAuth, async (req, res) => {
     const priceList = prices.map((p) => `${p.product_name} | ${p.unit} | ${p.price} ريال | ${p.supplier_company}`).join("\n");
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.6-terra",
+      model: AI_MODEL,
       max_completion_tokens: 8192,
       messages: [
         {

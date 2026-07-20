@@ -107,69 +107,6 @@ export const GetPlatformStatsResponse = zod.object({
 
 
 /**
- * @summary Submit a new supply request (business owners only)
- */
-export const CreateSupplyRequestBody = zod.object({
-  "requester_name": zod.string(),
-  "company_name": zod.string(),
-  "business_type": zod.string(),
-  "product_category": zod.string(),
-  "description": zod.string(),
-  "quantity": zod.string(),
-  "unit": zod.string(),
-  "frequency": zod.string(),
-  "delivery_region": zod.string(),
-  "budget_range": zod.string().optional(),
-  "notes": zod.string().optional()
-})
-
-export const CreateSupplyRequestResponse = zod.object({
-  "id": zod.number(),
-  "requester_id": zod.string(),
-  "requester_name": zod.string(),
-  "company_name": zod.string(),
-  "business_type": zod.string(),
-  "product_category": zod.string(),
-  "description": zod.string(),
-  "quantity": zod.string(),
-  "unit": zod.string(),
-  "frequency": zod.string(),
-  "delivery_region": zod.string(),
-  "budget_range": zod.string().nullish(),
-  "status": zod.enum(['open', 'in_review', 'matched', 'fulfilled', 'cancelled']),
-  "notes": zod.string().nullish(),
-  "created_at": zod.string()
-})
-
-
-/**
- * @summary Get the caller's own supply requests, optionally filtered by status
- */
-export const GetSupplyRequestsQueryParams = zod.object({
-  "status": zod.enum(['open', 'in_review', 'matched', 'fulfilled', 'cancelled']).optional()
-})
-
-export const GetSupplyRequestsResponseItem = zod.object({
-  "id": zod.number(),
-  "requester_id": zod.string(),
-  "requester_name": zod.string(),
-  "company_name": zod.string(),
-  "business_type": zod.string(),
-  "product_category": zod.string(),
-  "description": zod.string(),
-  "quantity": zod.string(),
-  "unit": zod.string(),
-  "frequency": zod.string(),
-  "delivery_region": zod.string(),
-  "budget_range": zod.string().nullish(),
-  "status": zod.enum(['open', 'in_review', 'matched', 'fulfilled', 'cancelled']),
-  "notes": zod.string().nullish(),
-  "created_at": zod.string()
-})
-export const GetSupplyRequestsResponse = zod.array(GetSupplyRequestsResponseItem)
-
-
-/**
  * @summary Get partner directory (business owners see suppliers, suppliers see businesses)
  */
 export const GetPartnersResponseItem = zod.object({

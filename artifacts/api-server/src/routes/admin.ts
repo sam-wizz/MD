@@ -3,6 +3,7 @@ import { db, ordersTable, profilesTable, supplierPricesTable } from "@workspace/
 import { eq, desc } from "drizzle-orm";
 import { requireAuth, requireAdmin } from "../middlewares/auth";
 import { openai } from "@workspace/integrations-openai-ai-server";
+import { AI_MODEL } from "../lib/ai";
 
 const router = Router();
 
@@ -117,7 +118,7 @@ router.post("/orders/:id/recommend", async (req, res) => {
       .join("\n");
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.6-terra",
+      model: AI_MODEL,
       max_completion_tokens: 8192,
       messages: [
         {

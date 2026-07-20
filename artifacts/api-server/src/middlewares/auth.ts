@@ -36,6 +36,34 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || "";
 
+// Short-TTL cache of verified tokens so each request doesn't cost a round-trip
+// to Supabase. TTL is well below Supabase's access-token lifetime (1h default);
+// worst case a revoked token stays usable for the TTL window.
+const TOKEN_CACHE_TTL_MS = 60_000;
+const TOKEN_CACHE_MAX = 5_000;
+const tokenCache = new Map<string, { id: string; email?: string; expires: number }>();
+
+function getCachedUser(token: string) {
+  const entry = tokenCache.get(token);
+  if (!entry) return undefined;
+  if (entry.expires < Date.now()) {
+    tokenCache.delete(token);
+    return undefined;
+  }
+  return entry;
+}
+
+function cacheUser(token: string, id: string, email?: string) {
+  if (tokenCache.size >= TOKEN_CACHE_MAX) {
+    // Drop the oldest entries (Map preserves insertion order).
+    for (const key of tokenCache.keys()) {
+      tokenCache.delete(key);
+      if (tokenCache.size < TOKEN_CACHE_MAX) break;
+    }
+  }
+  tokenCache.set(token, { id, email, expires: Date.now() + TOKEN_CACHE_TTL_MS });
+}
+
 /**
  * Requires a valid Supabase access token in the Authorization header.
  * Verifies the token against Supabase Auth and attaches the authenticated
@@ -60,6 +88,13 @@ export async function requireAuth(
     return res.status(500).json({ error: "Authentication is not configured" });
   }
 
+  const cached = getCachedUser(token);
+  if (cached) {
+    req.userId = cached.id;
+    req.userEmail = cached.email;
+    return next();
+  }
+
   try {
     const resp = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: {
@@ -77,6 +112,7 @@ export async function requireAuth(
       return res.status(401).json({ error: "Invalid or expired token" });
     }
 
+    cacheUser(token, user.id, user.email);
     req.userId = user.id;
     req.userEmail = user.email;
     return next();

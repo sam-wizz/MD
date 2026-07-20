@@ -27,7 +27,6 @@ import type {
   AdminOrderActionInput,
   DashboardOverview,
   ErrorResponse,
-  GetSupplyRequestsParams,
   HealthStatus,
   InvoiceAnalysis,
   InvoiceAnalyzeInput,
@@ -40,8 +39,6 @@ import type {
   ProfileInput,
   ProfileStatusUpdateInput,
   SupplierPrice,
-  SupplyRequest,
-  SupplyRequestInput,
   UserProfile
 } from './api.schemas';
 
@@ -516,161 +513,6 @@ export function useGetPlatformStats<TData = Awaited<ReturnType<typeof getPlatfor
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetPlatformStatsQueryOptions(options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-
-export const getCreateSupplyRequestUrl = () => {
-
-
-
-
-  return `/api/requests`
-}
-
-/**
- * @summary Submit a new supply request (business owners only)
- */
-export const createSupplyRequest = async (supplyRequestInput: SupplyRequestInput, options?: RequestInit): Promise<SupplyRequest> => {
-
-  return customFetch<SupplyRequest>(getCreateSupplyRequestUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(supplyRequestInput)
-  }
-);}
-
-
-
-
-
-export const getCreateSupplyRequestMutationOptions = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSupplyRequest>>, TError,{data: BodyType<SupplyRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createSupplyRequest>>, TError,{data: BodyType<SupplyRequestInput>}, TContext> => {
-
-const mutationKey = ['createSupplyRequest'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSupplyRequest>>, {data: BodyType<SupplyRequestInput>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createSupplyRequest(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateSupplyRequestMutationResult = NonNullable<Awaited<ReturnType<typeof createSupplyRequest>>>
-    export type CreateSupplyRequestMutationBody = BodyType<SupplyRequestInput>
-    export type CreateSupplyRequestMutationError = ErrorType<ErrorResponse>
-
-    /**
- * @summary Submit a new supply request (business owners only)
- */
-export const useCreateSupplyRequest = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSupplyRequest>>, TError,{data: BodyType<SupplyRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof createSupplyRequest>>,
-        TError,
-        {data: BodyType<SupplyRequestInput>},
-        TContext
-      > => {
-      return useMutation(getCreateSupplyRequestMutationOptions(options));
-    }
-
-export const getGetSupplyRequestsUrl = (params?: GetSupplyRequestsParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/requests?${stringifiedParams}` : `/api/requests`
-}
-
-/**
- * @summary Get the caller's own supply requests, optionally filtered by status
- */
-export const getSupplyRequests = async (params?: GetSupplyRequestsParams, options?: RequestInit): Promise<SupplyRequest[]> => {
-
-  return customFetch<SupplyRequest[]>(getGetSupplyRequestsUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getGetSupplyRequestsQueryKey = (params?: GetSupplyRequestsParams,) => {
-    return [
-    `/api/requests`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetSupplyRequestsQueryOptions = <TData = Awaited<ReturnType<typeof getSupplyRequests>>, TError = ErrorType<unknown>>(params?: GetSupplyRequestsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSupplyRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetSupplyRequestsQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSupplyRequests>>> = ({ signal }) => getSupplyRequests(params, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSupplyRequests>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetSupplyRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof getSupplyRequests>>>
-export type GetSupplyRequestsQueryError = ErrorType<unknown>
-
-
-/**
- * @summary Get the caller's own supply requests, optionally filtered by status
- */
-
-export function useGetSupplyRequests<TData = Awaited<ReturnType<typeof getSupplyRequests>>, TError = ErrorType<unknown>>(
- params?: GetSupplyRequestsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSupplyRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getGetSupplyRequestsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

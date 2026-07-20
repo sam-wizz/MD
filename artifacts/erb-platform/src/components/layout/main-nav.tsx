@@ -1,12 +1,14 @@
 import { Link, useLocation } from "wouter";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { Building2, LogOut, LayoutDashboard, ChevronLeft, ShieldCheck } from "lucide-react";
+import { Building2, LogOut, LayoutDashboard, ChevronLeft, ShieldCheck, Sun, Moon } from "lucide-react";
 import { useGetMyAccess, getGetMyAccessQueryKey } from "@workspace/api-client-react";
 
 export function MainNav() {
   const { user } = useAuth();
+  const { resolvedTheme, setTheme } = useTheme();
   const [, setLocation] = useLocation();
   const { data: access } = useGetMyAccess({
     query: { enabled: !!user, queryKey: getGetMyAccessQueryKey() },
@@ -31,6 +33,15 @@ export function MainNav() {
           </div>
         </Link>
         <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            aria-label={resolvedTheme === "dark" ? "الوضع النهاري" : "الوضع الليلي"}
+            data-testid="button-theme-toggle"
+            className="inline-flex items-center justify-center rounded-sm h-10 w-10 text-slate-300 hover:text-white hover:bg-white/10 border border-white/10 transition-colors duration-300"
+          >
+            {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           {user ? (
             <>
               {access?.is_admin && (

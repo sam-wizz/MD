@@ -96,51 +96,6 @@ export interface PlatformStats {
   industries_covered: number;
 }
 
-export interface SupplyRequestInput {
-  requester_name: string;
-  company_name: string;
-  business_type: string;
-  product_category: string;
-  description: string;
-  quantity: string;
-  unit: string;
-  frequency: string;
-  delivery_region: string;
-  budget_range?: string;
-  notes?: string;
-}
-
-export type SupplyRequestStatus = typeof SupplyRequestStatus[keyof typeof SupplyRequestStatus];
-
-
-export const SupplyRequestStatus = {
-  open: 'open',
-  in_review: 'in_review',
-  matched: 'matched',
-  fulfilled: 'fulfilled',
-  cancelled: 'cancelled',
-} as const;
-
-export interface SupplyRequest {
-  id: number;
-  requester_id: string;
-  requester_name: string;
-  company_name: string;
-  business_type: string;
-  product_category: string;
-  description: string;
-  quantity: string;
-  unit: string;
-  frequency: string;
-  delivery_region: string;
-  /** @nullable */
-  budget_range?: string | null;
-  status: SupplyRequestStatus;
-  /** @nullable */
-  notes?: string | null;
-  created_at: string;
-}
-
 export type PartnerProfileRole = typeof PartnerProfileRole[keyof typeof PartnerProfileRole];
 
 
@@ -302,21 +257,6 @@ export interface InvoiceAnalysis {
   summary?: string | null;
   created_at: string;
 }
-
-export type GetSupplyRequestsParams = {
-status?: GetSupplyRequestsStatus;
-};
-
-export type GetSupplyRequestsStatus = typeof GetSupplyRequestsStatus[keyof typeof GetSupplyRequestsStatus];
-
-
-export const GetSupplyRequestsStatus = {
-  open: 'open',
-  in_review: 'in_review',
-  matched: 'matched',
-  fulfilled: 'fulfilled',
-  cancelled: 'cancelled',
-} as const;
 
 export type AdminGetOrdersParams = {
 status?: string;

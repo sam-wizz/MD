@@ -8,9 +8,10 @@ B2B supply-chain platform for Saudi Arabia: verified suppliers (موردين) co
 - `pnpm --filter @workspace/erb-platform run dev` — run the frontend dev server (defaults to port 3000, proxies `/api` to `localhost:5000`; override the target with `API_PORT`)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
+- `pnpm run test` — run test suites (API server: vitest + supertest, no DB needed)
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env (API): `DATABASE_URL`; for auth: `SUPABASE_URL`/`VITE_SUPABASE_URL` + `SUPABASE_ANON_KEY`/`VITE_SUPABASE_ANON_KEY`, `ADMIN_EMAILS`; for AI routes: `AI_INTEGRATIONS_OPENAI_API_KEY` + `AI_INTEGRATIONS_OPENAI_BASE_URL` (server boots without these; AI endpoints fail until set)
+- Required env (API): `DATABASE_URL`; for auth: `SUPABASE_URL`/`VITE_SUPABASE_URL` + `SUPABASE_ANON_KEY`/`VITE_SUPABASE_ANON_KEY`, `ADMIN_EMAILS`; for AI routes: `AI_INTEGRATIONS_OPENAI_API_KEY` + `AI_INTEGRATIONS_OPENAI_BASE_URL` (server boots without these; AI endpoints fail until set); optional `AI_MODEL` overrides the gateway model id
 - Frontend build env: `SUPABASE_ANON_KEY` (injected at build), optional `VITE_GOOGLE_MAPS_API_KEY` for the order map
 
 ## Stack
@@ -34,10 +35,11 @@ B2B supply-chain platform for Saudi Arabia: verified suppliers (موردين) co
 
 ## Architecture decisions
 
-- Identity always comes from the verified Supabase token server-side; request bodies never carry `user_id`.
+- Identity always comes from the verified Supabase token server-side; request bodies never carry `user_id`. Verified tokens are cached in-memory for 60s to avoid a Supabase round-trip per request.
 - The frontend calls same-origin `/api/*`; Replit's deployment router maps it to the API server, and the Vite dev proxy covers local dev.
 - The OpenAI client is lazy-initialized so the API can boot without the AI integration provisioned.
-- `orders` is the primary workflow (pending → approved → assigned → preparing → in_transit → delivered, with optimistic-concurrency status updates); the older `supply_requests` flow is vestigial.
+- `orders` is the primary workflow (pending → approved → assigned → preparing → in_transit → delivered, with optimistic-concurrency status updates). The older `supply_requests` API was removed (superseded by orders); its DB table remains untouched, drop it when convenient.
+- Theme: class-based dark mode via next-themes (toggle in the nav, defaults to the OS preference). Signed-in pages are code-split with `React.lazy`.
 
 ## Gotchas
 
