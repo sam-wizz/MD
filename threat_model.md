@@ -34,7 +34,7 @@ _Last reviewed: 2026-07-20. Treat the code as ground truth; update this file whe
 
 ## Remaining Risks / Watch List
 
-1. **Admin gating by email list** — `requireAdmin` trusts the email claim returned by Supabase. This is only as strong as Supabase's email verification settings; ensure "confirm email" is enforced in the Supabase project, and consider moving admin status to a DB role/flag instead of `ADMIN_EMAILS`.
+1. **Admin gating** — primary source is the `user_profiles.is_admin` DB flag, managed from the admin panel (self-revocation blocked). `ADMIN_EMAILS` remains as a bootstrap list that trusts the email claim returned by Supabase — keep it to one address and ensure "confirm email" is enforced in the Supabase project.
 2. **Auth availability coupling** — token verification calls Supabase over HTTP, softened by a 60-second in-memory cache of verified tokens (`auth.ts`). Trade-off: a revoked token stays usable for up to 60s. For further hardening, switch to local JWT signature verification (JWKS).
 3. **Large body limit (20 MB)** — required for invoice uploads but applies to all JSON routes; combined with the write limiter (30/min) the flooding risk is bounded, but a dedicated upload route with a scoped limit would be tighter.
 4. **AI output handling** — AI responses are parsed best-effort and stored as JSON-in-text; they are rendered client-side. Do not render AI output as HTML (currently rendered as text — keep it that way).

@@ -23,6 +23,7 @@ export interface UserProfile {
   industry?: string | null;
   /** @nullable */
   country?: string | null;
+  is_admin?: boolean;
   status: UserProfileStatus;
   created_at: string;
 }

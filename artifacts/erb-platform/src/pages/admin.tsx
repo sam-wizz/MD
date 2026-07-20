@@ -348,6 +348,11 @@ export default function Admin() {
                           <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{p.company_name}</div>
                           <div className="text-xs text-slate-400">{p.role === "supplier" ? "مورّد" : "صاحب منشأة"} · {p.email}</div>
                         </div>
+                        {p.is_admin && (
+                          <span className="text-[11px] font-bold px-2.5 py-1 rounded-sm border bg-blue-100 text-blue-800 border-blue-200 inline-flex items-center gap-1">
+                            <ShieldCheck className="h-3 w-3" /> إدارة
+                          </span>
+                        )}
                         <span className={`text-[11px] font-bold px-2.5 py-1 rounded-sm border ${
                           p.status === "approved" ? "bg-emerald-100 text-emerald-800 border-emerald-200"
                           : p.status === "pending" ? "bg-amber-100 text-amber-800 border-amber-200"
@@ -370,6 +375,17 @@ export default function Admin() {
                             onClick={() => setProfileStatus.mutate({ id: p.id, data: { status: "rejected" } })}
                           >
                             إيقاف
+                          </Button>
+                        )}
+                        {p.user_id !== user?.id && (
+                          <Button
+                            size="sm" variant="outline"
+                            className={`rounded-sm font-bold text-xs ${p.is_admin ? "text-amber-700 border-amber-200 hover:bg-amber-50" : "text-blue-700 border-blue-200 hover:bg-blue-50"}`}
+                            disabled={setProfileStatus.isPending}
+                            data-testid={`button-toggle-admin-${p.id}`}
+                            onClick={() => setProfileStatus.mutate({ id: p.id, data: { is_admin: !p.is_admin } })}
+                          >
+                            {p.is_admin ? "سحب الإدارة" : "منح الإدارة"}
                           </Button>
                         )}
                       </div>

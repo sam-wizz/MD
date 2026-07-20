@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db, ordersTable, profilesTable } from "@workspace/db";
 import { eq, desc, and } from "drizzle-orm";
-import { requireAuth, isAdminEmail } from "../middlewares/auth";
+import { requireAuth, isAdminUser } from "../middlewares/auth";
 
 const router = Router();
 
@@ -87,7 +87,7 @@ router.get("/:id", requireAuth, async (req, res) => {
     const allowed =
       order.business_id === req.userId ||
       order.assigned_supplier_id === req.userId ||
-      isAdminEmail(req.userEmail);
+      (await isAdminUser(req.userId, req.userEmail));
     if (!allowed) return res.status(404).json({ error: "الطلب غير موجود" });
 
     return res.json(serialize(order));
@@ -122,7 +122,7 @@ router.patch("/:id/status", requireAuth, async (req, res) => {
 
     const isOwner = order.business_id === req.userId;
     const isAssignedSupplier = order.assigned_supplier_id === req.userId;
-    const isAdmin = isAdminEmail(req.userEmail);
+    const isAdmin = await isAdminUser(req.userId, req.userEmail);
 
     if (status === "cancelled") {
       // الإلغاء: صاحب الطلب (أو الإدارة) فقط، وفقط ما دام الطلب قيد المراجعة

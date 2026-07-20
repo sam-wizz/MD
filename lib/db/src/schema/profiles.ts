@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, pgEnum, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -17,6 +17,7 @@ export const profilesTable = pgTable("user_profiles", {
   industry: text("industry"),
   country: text("country"),
   status: profileStatusEnum("status").notNull().default("pending"),
+  is_admin: boolean("is_admin").notNull().default(false),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });

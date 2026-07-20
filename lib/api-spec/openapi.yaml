@@ -485,7 +485,7 @@ paths:
     patch:
       operationId: adminSetProfileStatus
       tags: [admin]
-      summary: Approve or reject a user profile (admin)
+      summary: Approve/reject a profile or grant/revoke admin (admin)
       security:
         - bearerAuth: []
       parameters:
@@ -572,6 +572,8 @@ components:
           type: ["string", "null"]
         country:
           type: ["string", "null"]
+        is_admin:
+          type: boolean
         status:
           type: string
           enum: [pending, approved, rejected]
@@ -819,12 +821,13 @@ components:
 
     ProfileStatusUpdateInput:
       type: object
+      description: At least one of status or is_admin must be provided.
       properties:
         status:
           type: string
           enum: [approved, rejected]
-      required:
-        - status
+        is_admin:
+          type: boolean
 
     SupplierPrice:
       type: object

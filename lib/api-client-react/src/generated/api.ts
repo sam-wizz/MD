@@ -1740,7 +1740,7 @@ export const getAdminSetProfileStatusUrl = (id: number,) => {
 }
 
 /**
- * @summary Approve or reject a user profile (admin)
+ * @summary Approve/reject a profile or grant/revoke admin (admin)
  */
 export const adminSetProfileStatus = async (id: number,
     profileStatusUpdateInput: ProfileStatusUpdateInput, options?: RequestInit): Promise<UserProfile> => {
@@ -1790,7 +1790,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AdminSetProfileStatusMutationError = ErrorType<unknown>
 
     /**
- * @summary Approve or reject a user profile (admin)
+ * @summary Approve/reject a profile or grant/revoke admin (admin)
  */
 export const useAdminSetProfileStatus = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminSetProfileStatus>>, TError,{id: number;data: BodyType<ProfileStatusUpdateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}

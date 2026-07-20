@@ -45,6 +45,7 @@ export interface UserProfile {
   industry?: string | null;
   /** @nullable */
   country?: string | null;
+  is_admin?: boolean;
   status: UserProfileStatus;
   created_at: string;
 }
@@ -212,8 +213,12 @@ export const ProfileStatusUpdateInputStatus = {
   rejected: 'rejected',
 } as const;
 
+/**
+ * At least one of status or is_admin must be provided.
+ */
 export interface ProfileStatusUpdateInput {
-  status: ProfileStatusUpdateInputStatus;
+  status?: ProfileStatusUpdateInputStatus;
+  is_admin?: boolean;
 }
 
 export interface SupplierPrice {

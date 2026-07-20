@@ -7,6 +7,10 @@
  */
 import type { ProfileStatusUpdateInputStatus } from './profileStatusUpdateInputStatus';
 
+/**
+ * At least one of status or is_admin must be provided.
+ */
 export interface ProfileStatusUpdateInput {
-  status: ProfileStatusUpdateInputStatus;
+  status?: ProfileStatusUpdateInputStatus;
+  is_admin?: boolean;
 }

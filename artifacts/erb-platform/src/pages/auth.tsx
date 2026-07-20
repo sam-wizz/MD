@@ -140,10 +140,15 @@ export default function Auth() {
   };
 
   const handleGoogleSignIn = async () => {
-    await supabase.auth.signInWithOAuth({
+    // BASE_URL-aware so the redirect lands on /auth even behind a base path.
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: window.location.origin + "/auth" },
+      options: { redirectTo: `${window.location.origin}${base}/auth` },
     });
+    if (error) {
+      toast({ title: "تعذر بدء تسجيل الدخول عبر Google", description: error.message, variant: "destructive" });
+    }
   };
 
   const handleRegStep1 = (e: React.FormEvent) => {
@@ -199,6 +204,20 @@ export default function Auth() {
   };
 
   // ── layout ──────────────────────────────────────────────────────────────────
+
+  // Post-OAuth (or already signed-in): show a transition screen instead of
+  // flashing the login form while the redirect effect resolves the profile.
+  if (!authLoading && session && !loading && !createProfile.isPending) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-[#07111f] to-slate-950">
+        <div className="animate-pulse flex flex-col items-center gap-3">
+          <Building2 className="h-8 w-8 text-blue-400" />
+          <div className="text-sm font-bold text-white/70">جارٍ تسجيل دخولك...</div>
+          <div className="text-xs text-white/40">Signing you in</div>
+        </div>
+      </div>
+    );
+  }
 
   const isStep2 = tab === "register" && step === 2;
 

@@ -181,25 +181,44 @@ router.get("/profiles", async (req, res) => {
   }
 });
 
-// PATCH /api/admin/profiles/:id — اعتماد أو رفض حساب
+// PATCH /api/admin/profiles/:id — اعتماد/رفض حساب أو منح/سحب صلاحية الإدارة
 router.patch("/profiles/:id", async (req, res) => {
   const id = Number.parseInt(String(req.params.id), 10);
   if (!Number.isFinite(id)) return res.status(400).json({ error: "معرّف غير صالح" });
 
-  const { status } = req.body ?? {};
-  if (!["approved", "rejected"].includes(status)) {
+  const { status, is_admin } = req.body ?? {};
+  if (status === undefined && is_admin === undefined) {
+    return res.status(400).json({ error: "حدد الحالة أو صلاحية الإدارة" });
+  }
+  if (status !== undefined && !["approved", "rejected"].includes(status)) {
     return res.status(400).json({ error: "حالة غير صالحة" });
+  }
+  if (is_admin !== undefined && typeof is_admin !== "boolean") {
+    return res.status(400).json({ error: "قيمة صلاحية الإدارة غير صالحة" });
   }
 
   try {
+    const patch: Partial<typeof profilesTable.$inferInsert> = { updated_at: new Date() };
+    if (status !== undefined) patch.status = status;
+    if (is_admin !== undefined) {
+      // حماية: لا يستطيع المدير سحب صلاحيته من نفسه حتى لا تُقفل الإدارة بالخطأ
+      if (is_admin === false) {
+        const target = await db.select().from(profilesTable).where(eq(profilesTable.id, id)).limit(1);
+        if (target[0]?.user_id === req.userId) {
+          return res.status(409).json({ error: "لا يمكنك سحب صلاحية الإدارة من حسابك" });
+        }
+      }
+      patch.is_admin = is_admin;
+    }
+
     const updated = await db.update(profilesTable)
-      .set({ status, updated_at: new Date() })
+      .set(patch)
       .where(eq(profilesTable.id, id))
       .returning();
     if (!updated.length) return res.status(404).json({ error: "الحساب غير موجود" });
     return res.json(serializeProfile(updated[0]));
   } catch (err) {
-    req.log.error({ err }, "Failed to update profile status");
+    req.log.error({ err }, "Failed to update profile");
     return res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
+import { db, profilesTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 declare global {
   namespace Express {
@@ -19,13 +21,36 @@ export function isAdminEmail(email?: string): boolean {
   return list.includes(email.toLowerCase());
 }
 
-/** يتطلب أن يكون المستخدم الموثق ضمن إيميلات الإدارة. يوضع بعد requireAuth. */
-export function requireAdmin(
+/**
+ * هل المستخدم من الإدارة؟ المصدر الأساسي عمود is_admin في قاعدة البيانات،
+ * مع بقاء ADMIN_EMAILS كقائمة تمهيدية (bootstrap) لأول مدير قبل منح الصلاحيات.
+ */
+export async function isAdminUser(
+  userId?: string,
+  email?: string,
+): Promise<boolean> {
+  if (isAdminEmail(email)) return true;
+  if (!userId) return false;
+  try {
+    const rows = await db
+      .select({ is_admin: profilesTable.is_admin })
+      .from(profilesTable)
+      .where(eq(profilesTable.user_id, userId))
+      .limit(1);
+    return rows[0]?.is_admin === true;
+  } catch {
+    // العمود قد لا يكون موجوداً قبل تشغيل db push — نكتفي حينها بقائمة الإيميلات.
+    return false;
+  }
+}
+
+/** يتطلب أن يكون المستخدم الموثق من الإدارة. يوضع بعد requireAuth. */
+export async function requireAdmin(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  if (!isAdminEmail(req.userEmail)) {
+  if (!(await isAdminUser(req.userId, req.userEmail))) {
     return res.status(403).json({ error: "صلاحية الإدارة مطلوبة" });
   }
   return next();

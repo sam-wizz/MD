@@ -30,6 +30,7 @@ export const GetMyProfileResponse = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
 })
@@ -60,6 +61,7 @@ export const CreateProfileResponse = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
 })
@@ -480,6 +482,7 @@ export const AdminGetProfilesResponseItem = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
 })
@@ -487,15 +490,16 @@ export const AdminGetProfilesResponse = zod.array(AdminGetProfilesResponseItem)
 
 
 /**
- * @summary Approve or reject a user profile (admin)
+ * @summary Approve/reject a profile or grant/revoke admin (admin)
  */
 export const AdminSetProfileStatusParams = zod.object({
   "id": zod.coerce.number()
 })
 
 export const AdminSetProfileStatusBody = zod.object({
-  "status": zod.enum(['approved', 'rejected'])
-})
+  "status": zod.enum(['approved', 'rejected']).optional(),
+  "is_admin": zod.boolean().optional()
+}).describe('At least one of status or is_admin must be provided.')
 
 export const AdminSetProfileStatusResponse = zod.object({
   "id": zod.number(),
@@ -508,6 +512,7 @@ export const AdminSetProfileStatusResponse = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
 })

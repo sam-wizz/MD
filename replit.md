@@ -24,6 +24,21 @@ B2B supply-chain platform for Saudi Arabia: verified suppliers (موردين) co
 - API codegen: Orval (from OpenAPI spec)
 - AI: OpenAI-compatible gateway (invoice OCR + supplier recommendation)
 
+## Deploy (any host)
+
+The API server serves the built frontend automatically when `artifacts/erb-platform/dist/public` exists (override the location with `STATIC_DIR`), so the whole site can run as **one Node service**:
+
+1. `pnpm install && pnpm run build` (frontend needs `SUPABASE_ANON_KEY`, and `VITE_SUPABASE_URL` in the environment at build time; optional `VITE_GOOGLE_MAPS_API_KEY`)
+2. Set runtime env: `DATABASE_URL`, `PORT`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ADMIN_EMAILS` (bootstrap admin), `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`, optional `AI_MODEL`, and `ALLOWED_ORIGINS` if the frontend is served from a different domain
+3. `pnpm --filter @workspace/db run push` — applies schema (includes the `is_admin` column) to the target Postgres
+4. Start: `pnpm --filter @workspace/api-server run start` (build step already produced `dist/index.mjs`)
+
+**Google OAuth (must be configured in the Supabase dashboard, once):**
+- Auth → Providers → Google: enable, paste the Client ID/Secret from Google Cloud Console (OAuth consent screen + Web credentials; authorized redirect URI is `https://<project-ref>.supabase.co/auth/v1/callback`)
+- Auth → URL Configuration: set Site URL to the production domain and add redirect URLs: `https://<your-domain>/auth` and `http://localhost:3000/auth` for local dev
+
+**Admin bootstrap:** the email(s) in `ADMIN_EMAILS` are admins immediately; after signing in, grant/revoke admin for anyone from the admin panel (Accounts tab) — stored in `user_profiles.is_admin`.
+
 ## Where things live
 
 - `artifacts/api-server` — Express API (`src/routes/*` per feature, `src/middlewares/auth.ts` for requireAuth/requireAdmin)
@@ -46,7 +61,7 @@ B2B supply-chain platform for Saudi Arabia: verified suppliers (موردين) co
 - Run `pnpm --filter @workspace/api-spec run codegen` after editing `openapi.yaml`; generated `index.ts` export lines must keep Orval's single-quote style or codegen appends duplicates.
 - On Windows, run pnpm through Git Bash (the root `preinstall` uses `sh`); stale committed `*.tsbuildinfo` files can make `tsc --build` skip emitting lib `dist/` — delete them if typecheck reports TS6305.
 - `pnpm-workspace.yaml` excludes most platform-specific native binaries; win32-x64 and linux-x64 are the supported dev/prod platforms.
-- Admin access = verified email listed in `ADMIN_EMAILS` (comma-separated).
+- Admin access = `user_profiles.is_admin` in the DB, plus any verified email in `ADMIN_EMAILS` (bootstrap). Run `db push` before relying on the DB flag.
 
 ## Product
 
