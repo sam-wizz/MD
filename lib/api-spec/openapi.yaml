@@ -1,0 +1,1052 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: ERB Platform API - connecting suppliers with retailers in Saudi Arabia
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: profiles
+    description: User profile management
+  - name: dashboard
+    description: Dashboard data
+  - name: requests
+    description: Supply request management
+  - name: partners
+    description: Role-aware partner directory
+  - name: orders
+    description: Supply order workflow
+  - name: prices
+    description: Supplier price lists
+  - name: invoices
+    description: AI invoice analysis
+  - name: access
+    description: Caller access flags
+  - name: admin
+    description: Admin operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /profiles/me:
+    get:
+      operationId: getMyProfile
+      tags: [profiles]
+      summary: Get authenticated user profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "404":
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /profiles:
+    post:
+      operationId: createProfile
+      tags: [profiles]
+      summary: Create or update user profile after registration
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "201":
+          description: Profile created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /dashboard/overview:
+    get:
+      operationId: getDashboardOverview
+      tags: [dashboard]
+      summary: Get dashboard overview statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard overview data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardOverview"
+
+  /dashboard/activity:
+    get:
+      operationId: getDashboardActivity
+      tags: [dashboard]
+      summary: Get recent platform activity feed
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /dashboard/stats:
+    get:
+      operationId: getPlatformStats
+      tags: [dashboard]
+      summary: Get platform-wide supply chain statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Platform statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+  /requests:
+    post:
+      operationId: createSupplyRequest
+      tags: [requests]
+      summary: Submit a new supply request (business owners only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupplyRequestInput"
+      responses:
+        "201":
+          description: Supply request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplyRequest"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: getSupplyRequests
+      tags: [requests]
+      summary: Get the caller's own supply requests, optionally filtered by status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [open, in_review, matched, fulfilled, cancelled]
+      responses:
+        "200":
+          description: List of supply requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupplyRequest"
+
+  /partners:
+    get:
+      operationId: getPartners
+      tags: [partners]
+      summary: Get partner directory (business owners see suppliers, suppliers see businesses)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of partner profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PartnerProfile"
+        "404":
+          description: Caller profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /me/access:
+    get:
+      operationId: getMyAccess
+      tags: [access]
+      summary: Get caller access flags (admin or not)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Access flags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessInfo"
+
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Create a new order (business owner)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateInput"
+      responses:
+        "201":
+          description: Created order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/mine:
+    get:
+      operationId: getMyOrders
+      tags: [orders]
+      summary: List caller's own orders (business owner)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /orders/assigned:
+    get:
+      operationId: getAssignedOrders
+      tags: [orders]
+      summary: List orders assigned to the calling supplier
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get one order (owner, assigned supplier, or admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Update delivery status (assigned supplier or admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusUpdateInput"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /prices/mine:
+    get:
+      operationId: getMyPrices
+      tags: [prices]
+      summary: List the calling supplier's price list
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Prices list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupplierPrice"
+
+  /prices:
+    post:
+      operationId: createPrice
+      tags: [prices]
+      summary: Add a product price (supplier)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PriceCreateInput"
+      responses:
+        "201":
+          description: Created price row
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplierPrice"
+
+  /prices/{id}:
+    delete:
+      operationId: deletePrice
+      tags: [prices]
+      summary: Delete own price row (supplier)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /invoices/analyze:
+    post:
+      operationId: analyzeInvoice
+      tags: [invoices]
+      summary: Upload a previous invoice image for AI price comparison (business owner)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvoiceAnalyzeInput"
+      responses:
+        "201":
+          description: Invoice analysis result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoiceAnalysis"
+
+  /invoices/mine:
+    get:
+      operationId: getMyInvoiceAnalyses
+      tags: [invoices]
+      summary: List caller's past invoice analyses
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Analyses list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InvoiceAnalysis"
+
+  /admin/orders:
+    get:
+      operationId: adminGetOrders
+      tags: [admin]
+      summary: List all orders (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /admin/orders/{id}:
+    patch:
+      operationId: adminActOnOrder
+      tags: [admin]
+      summary: Approve, reject, or assign a supplier to an order (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminOrderActionInput"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /admin/orders/{id}/recommend:
+    post:
+      operationId: adminRecommendSupplier
+      tags: [admin]
+      summary: Run AI to pick the lowest-price supplier for an order (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order with fresh AI recommendation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "422":
+          description: No supplier prices available for comparison
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/profiles:
+    get:
+      operationId: adminGetProfiles
+      tags: [admin]
+      summary: List user profiles, optionally by status (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Profiles list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserProfile"
+
+  /admin/profiles/{id}:
+    patch:
+      operationId: adminSetProfileStatus
+      tags: [admin]
+      summary: Approve or reject a user profile (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileStatusUpdateInput"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /admin/prices:
+    get:
+      operationId: adminGetPrices
+      tags: [admin]
+      summary: List all supplier prices (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Prices list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupplierPrice"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: string
+        email:
+          type: string
+        full_name:
+          type: string
+        company_name:
+          type: string
+        role:
+          type: string
+          enum: [supplier, business_owner]
+        business_type:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        country:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        created_at:
+          type: string
+      required:
+        - id
+        - user_id
+        - email
+        - full_name
+        - company_name
+        - role
+        - status
+        - created_at
+
+    ProfileInput:
+      type: object
+      properties:
+        email:
+          type: string
+        full_name:
+          type: string
+        company_name:
+          type: string
+        role:
+          type: string
+          enum: [supplier, business_owner]
+        business_type:
+          type: string
+        phone:
+          type: string
+        industry:
+          type: string
+        country:
+          type: string
+      required:
+        - email
+        - full_name
+        - company_name
+        - role
+
+    DashboardOverview:
+      type: object
+      properties:
+        role:
+          type: string
+        status:
+          type: string
+        company_name:
+          type: string
+        full_name:
+          type: string
+        registered_at:
+          type: string
+        total_suppliers:
+          type: integer
+        total_retailers:
+          type: integer
+        active_connections:
+          type: integer
+      required:
+        - role
+        - status
+        - company_name
+        - full_name
+        - registered_at
+        - total_suppliers
+        - total_retailers
+        - active_connections
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+        role:
+          type: string
+      required:
+        - id
+        - type
+        - message
+        - timestamp
+        - role
+
+    PlatformStats:
+      type: object
+      properties:
+        total_suppliers:
+          type: integer
+        total_retailers:
+          type: integer
+        pending_approvals:
+          type: integer
+        active_connections:
+          type: integer
+        countries_served:
+          type: integer
+        industries_covered:
+          type: integer
+      required:
+        - total_suppliers
+        - total_retailers
+        - pending_approvals
+        - active_connections
+        - countries_served
+        - industries_covered
+
+    SupplyRequestInput:
+      type: object
+      properties:
+        requester_name:
+          type: string
+        company_name:
+          type: string
+        business_type:
+          type: string
+        product_category:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: string
+        unit:
+          type: string
+        frequency:
+          type: string
+        delivery_region:
+          type: string
+        budget_range:
+          type: string
+        notes:
+          type: string
+      required:
+        - requester_name
+        - company_name
+        - business_type
+        - product_category
+        - description
+        - quantity
+        - unit
+        - frequency
+        - delivery_region
+
+    SupplyRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        requester_id:
+          type: string
+        requester_name:
+          type: string
+        company_name:
+          type: string
+        business_type:
+          type: string
+        product_category:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: string
+        unit:
+          type: string
+        frequency:
+          type: string
+        delivery_region:
+          type: string
+        budget_range:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [open, in_review, matched, fulfilled, cancelled]
+        notes:
+          type: ["string", "null"]
+        created_at:
+          type: string
+      required:
+        - id
+        - requester_id
+        - requester_name
+        - company_name
+        - business_type
+        - product_category
+        - description
+        - quantity
+        - unit
+        - frequency
+        - delivery_region
+        - status
+        - created_at
+
+    PartnerProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_name:
+          type: string
+        full_name:
+          type: string
+        role:
+          type: string
+          enum: [supplier, business_owner]
+        business_type:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        email:
+          type: string
+        country:
+          type: ["string", "null"]
+        created_at:
+          type: string
+      required:
+        - id
+        - company_name
+        - full_name
+        - role
+        - email
+        - created_at
+
+    AccessInfo:
+      type: object
+      properties:
+        is_admin:
+          type: boolean
+      required:
+        - is_admin
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        business_id:
+          type: string
+        business_company:
+          type: string
+        business_contact:
+          type: string
+        business_phone:
+          type: ["string", "null"]
+        product_category:
+          type: string
+        items:
+          type: string
+        delivery_region:
+          type: string
+        delivery_address:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, approved, assigned, preparing, in_transit, delivered, rejected, cancelled]
+        assigned_supplier_id:
+          type: ["string", "null"]
+        assigned_supplier_company:
+          type: ["string", "null"]
+        assigned_supplier_region:
+          type: ["string", "null"]
+        admin_notes:
+          type: ["string", "null"]
+        ai_recommendation:
+          type: ["string", "null"]
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - id
+        - business_id
+        - business_company
+        - business_contact
+        - product_category
+        - items
+        - delivery_region
+        - status
+        - created_at
+        - updated_at
+
+    OrderCreateInput:
+      type: object
+      properties:
+        product_category:
+          type: string
+        items:
+          type: string
+        delivery_region:
+          type: string
+        delivery_address:
+          type: string
+        notes:
+          type: string
+        business_phone:
+          type: string
+      required:
+        - product_category
+        - items
+        - delivery_region
+
+    OrderStatusUpdateInput:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [preparing, in_transit, delivered, cancelled]
+      required:
+        - status
+
+    AdminOrderActionInput:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: [approve, reject, assign]
+        supplier_id:
+          type: string
+        admin_notes:
+          type: string
+      required:
+        - action
+
+    ProfileStatusUpdateInput:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected]
+      required:
+        - status
+
+    SupplierPrice:
+      type: object
+      properties:
+        id:
+          type: integer
+        supplier_id:
+          type: string
+        supplier_company:
+          type: string
+        product_name:
+          type: string
+        category:
+          type: string
+        unit:
+          type: string
+        price:
+          type: string
+        created_at:
+          type: string
+      required:
+        - id
+        - supplier_id
+        - supplier_company
+        - product_name
+        - category
+        - unit
+        - price
+        - created_at
+
+    PriceCreateInput:
+      type: object
+      properties:
+        product_name:
+          type: string
+        category:
+          type: string
+        unit:
+          type: string
+        price:
+          type: string
+      required:
+        - product_name
+        - category
+        - unit
+        - price
+
+    InvoiceAnalyzeInput:
+      type: object
+      properties:
+        file_base64:
+          type: string
+        mime_type:
+          type: string
+        file_name:
+          type: string
+      required:
+        - file_base64
+        - mime_type
+
+    InvoiceAnalysis:
+      type: object
+      properties:
+        id:
+          type: integer
+        business_id:
+          type: string
+        file_name:
+          type: ["string", "null"]
+        extracted_items:
+          type: string
+        invoice_total:
+          type: ["string", "null"]
+        comparison:
+          type: string
+        platform_total:
+          type: ["string", "null"]
+        potential_saving:
+          type: ["string", "null"]
+        summary:
+          type: ["string", "null"]
+        created_at:
+          type: string
+      required:
+        - id
+        - business_id
+        - extracted_items
+        - comparison
+        - created_at
