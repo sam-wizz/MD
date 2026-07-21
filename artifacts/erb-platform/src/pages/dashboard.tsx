@@ -110,7 +110,7 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="bg-white dark:bg-slate-900 border px-3 py-1.5 rounded-sm text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2 shadow-sm">
-              {profile?.role === "supplier" ? <Building2 className="h-4 w-4 text-blue-600" /> : <Store className="h-4 w-4 text-blue-600" />}
+              {profile?.role === "supplier" ? <Building2 className="h-4 w-4 text-zinc-800" /> : <Store className="h-4 w-4 text-zinc-800" />}
               {roleLabel} · {roleLabelEn}
             </div>
             {isPending && (
@@ -133,15 +133,15 @@ export default function Dashboard() {
 
         {/* Pending Alert */}
         {isPending && (
-          <Alert className="mb-8 border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-900 rounded-sm shadow-sm" data-testid="alert-pending-approval">
-            <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <AlertTitle className="text-blue-800 dark:text-blue-300 font-extrabold text-sm mb-1">
+          <Alert className="mb-8 border-zinc-200 bg-zinc-50 dark:bg-zinc-950/30 dark:border-zinc-900 rounded-sm shadow-sm" data-testid="alert-pending-approval">
+            <AlertCircle className="h-5 w-5 text-zinc-800 dark:text-zinc-400" />
+            <AlertTitle className="text-zinc-900 dark:text-zinc-300 font-extrabold text-sm mb-1">
               حسابك قيد المراجعة · Account Under Review
             </AlertTitle>
-            <AlertDescription className="text-blue-700 dark:text-blue-400/80 text-sm leading-relaxed">
+            <AlertDescription className="text-zinc-800 dark:text-zinc-400/80 text-sm leading-relaxed">
               سيتواصل معك فريق الإدارة قريباً للتحقق من بياناتك وتفعيل حسابك على المنصة.
               <br />
-              <span className="text-blue-600/70 text-xs">
+              <span className="text-zinc-600/70 text-xs">
                 Our administration team will review your registration and contact you shortly to activate full platform access.
               </span>
             </AlertDescription>
@@ -215,7 +215,7 @@ export default function Dashboard() {
             <Card className="rounded-sm border-slate-200 shadow-sm" data-testid="card-partners">
               <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-4">
                 <CardTitle className="text-base flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-                  <Handshake className="h-4 w-4 text-blue-600" />
+                  <Handshake className="h-4 w-4 text-zinc-800" />
                   {isSupplier ? "منشآت تبحث عن موردين · Businesses" : "الموردون المعتمدون · Verified Suppliers"}
                 </CardTitle>
               </CardHeader>
@@ -233,14 +233,14 @@ export default function Dashboard() {
                   <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
                     {partners.map((p) => (
                       <div key={p.id} className="p-4 flex flex-wrap items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors" data-testid={`row-partner-${p.id}`}>
-                        <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900 p-2.5 rounded-sm shrink-0">
+                        <div className="bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-100 dark:border-zinc-900 p-2.5 rounded-sm shrink-0">
                           {p.role === "supplier"
-                            ? <Truck className="h-5 w-5 text-blue-600" />
+                            ? <Truck className="h-5 w-5 text-zinc-800" />
                             : p.business_type === "cafe"
-                            ? <Coffee className="h-5 w-5 text-blue-600" />
+                            ? <Coffee className="h-5 w-5 text-zinc-800" />
                             : p.business_type === "supermarket"
-                            ? <ShoppingCart className="h-5 w-5 text-blue-600" />
-                            : <UtensilsCrossed className="h-5 w-5 text-blue-600" />}
+                            ? <ShoppingCart className="h-5 w-5 text-zinc-800" />
+                            : <UtensilsCrossed className="h-5 w-5 text-zinc-800" />}
                         </div>
                         <div className="flex-1 min-w-[140px]">
                           <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{p.company_name}</div>
@@ -253,7 +253,7 @@ export default function Dashboard() {
                           {p.phone && (
                             <a
                               href={`tel:${p.phone}`}
-                              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-sm bg-blue-600 text-white border border-blue-600 hover:bg-blue-500 transition-colors"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-sm bg-zinc-900 text-white border border-zinc-600 hover:bg-zinc-700 transition-colors"
                               data-testid={`link-call-${p.id}`}
                             >
                               <Phone className="h-3.5 w-3.5" /> اتصال
@@ -278,7 +278,7 @@ export default function Dashboard() {
             <Card className="rounded-sm border-slate-200 shadow-sm">
               <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-4">
                 <CardTitle className="text-base flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-                  <Activity className="h-4 w-4 text-blue-600" />
+                  <Activity className="h-4 w-4 text-zinc-800" />
                   سجل نشاط الشبكة · Network Activity Log
                 </CardTitle>
               </CardHeader>
@@ -293,7 +293,7 @@ export default function Dashboard() {
                       <div key={item.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors flex gap-4 items-start">
                         <div className="mt-0.5 bg-slate-100 dark:bg-slate-800 p-2 rounded-full shrink-0">
                           {item.type === "registration" && <Users className="h-4 w-4 text-slate-600 dark:text-slate-400" />}
-                          {item.type === "connection"   && <Activity className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
+                          {item.type === "connection"   && <Activity className="h-4 w-4 text-zinc-800 dark:text-zinc-400" />}
                           {item.type === "approval"     && <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
                           {(item.type !== "registration" && item.type !== "connection" && item.type !== "approval") &&
                             <Activity className="h-4 w-4 text-slate-400" />}
@@ -301,7 +301,7 @@ export default function Dashboard() {
                         <div>
                           <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item.message}</p>
                           <div className="flex items-center gap-2 mt-1.5">
-                            <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">{activityTypeAr(item.type)}</span>
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{activityTypeAr(item.type)}</span>
                             <span className="text-[10px] text-slate-300 dark:text-slate-600">·</span>
                             <span className="text-[10px] font-medium text-slate-400">
                               {new Date(item.timestamp).toLocaleString("ar-SA")}

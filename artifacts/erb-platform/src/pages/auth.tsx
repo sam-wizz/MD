@@ -13,7 +13,8 @@ import {
 } from "@workspace/api-client-react";
 import { ProfileInputRole } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
-import { Truck, UtensilsCrossed, Coffee, ShoppingCart, ArrowRight, ArrowLeft, Building2, Eye, EyeOff } from "lucide-react";
+import { Truck, UtensilsCrossed, Coffee, ShoppingCart, ArrowRight, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { MaddMark } from "@/components/layout/main-nav";
 
 // ─── types ───────────────────────────────────────────────────────────────────
 
@@ -71,7 +72,7 @@ const ROLES: BusinessRole[] = [
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 const inputClass =
-  "w-full bg-white/[0.06] border border-white/[0.12] text-white placeholder:text-white/35 rounded-xl h-12 px-4 focus:outline-none focus:border-blue-500/60 focus:bg-white/[0.09] transition text-sm";
+  "w-full bg-white/[0.06] border border-white/[0.12] text-white placeholder:text-white/35 rounded-xl h-12 px-4 focus:outline-none focus:border-zinc-500/60 focus:bg-white/[0.09] transition text-sm";
 
 // ─── component ───────────────────────────────────────────────────────────────
 
@@ -211,7 +212,7 @@ export default function Auth() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-[#07111f] to-slate-950">
         <div className="animate-pulse flex flex-col items-center gap-3">
-          <Building2 className="h-8 w-8 text-blue-400" />
+          <MaddMark className="h-10 w-10 text-zinc-400" />
           <div className="text-sm font-bold text-white/70">جارٍ تسجيل دخولك...</div>
           <div className="text-xs text-white/40">Signing you in</div>
         </div>
@@ -226,8 +227,8 @@ export default function Auth() {
       {/* Subtle grid overlay */}
       <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]" />
       {/* Blue glow */}
-      <div className="pointer-events-none fixed top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[120px]" />
-      <div className="pointer-events-none fixed bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-900/10 blur-[120px]" />
+      <div className="pointer-events-none fixed top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-zinc-600/10 blur-[120px]" />
+      <div className="pointer-events-none fixed bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-zinc-900/10 blur-[120px]" />
 
       <MainNav />
 
@@ -236,9 +237,7 @@ export default function Auth() {
         {isStep2 ? (
           <div className="w-full max-w-2xl">
             <div className="text-center mb-10">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-600/20 border border-blue-500/30 mb-4">
-                <Building2 className="h-5 w-5 text-blue-400" />
-              </div>
+              <MaddMark className="inline-block h-12 w-12 text-zinc-300 mb-4" />
               <h1 className="text-2xl font-extrabold text-white mb-1">ما طبيعة نشاطك؟</h1>
               <p className="text-white/40 text-sm">Select your business type</p>
             </div>
@@ -260,17 +259,17 @@ export default function Auth() {
                         setSelectedRole(r);
                       }
                     }}
-                    className={`cursor-pointer rounded-2xl p-6 border transition-all duration-200 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 ${
+                    className={`cursor-pointer rounded-2xl p-6 border transition-all duration-200 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 ${
                       selected
-                        ? "bg-blue-500/10 border-blue-500/60 shadow-lg shadow-blue-500/10"
+                        ? "bg-zinc-500/10 border-zinc-500/60 shadow-lg shadow-zinc-500/10"
                         : "bg-white/[0.04] border-white/[0.09] hover:bg-white/[0.08] hover:border-white/[0.18]"
                     }`}
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${selected ? "bg-blue-600/30" : "bg-white/[0.08]"}`}>
-                      <Icon className={`h-6 w-6 ${selected ? "text-blue-400" : "text-white/60"}`} />
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${selected ? "bg-zinc-600/30" : "bg-white/[0.08]"}`}>
+                      <Icon className={`h-6 w-6 ${selected ? "text-zinc-400" : "text-white/60"}`} />
                     </div>
                     <div className={`text-lg font-extrabold mb-0.5 ${selected ? "text-white" : "text-white/80"}`}>{r.label}</div>
-                    <div className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${selected ? "text-blue-400" : "text-white/30"}`}>{r.sub}</div>
+                    <div className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${selected ? "text-zinc-400" : "text-white/30"}`}>{r.sub}</div>
                     <div className="text-xs text-white/40 leading-snug">{r.desc}</div>
                   </div>
                 );
@@ -287,7 +286,7 @@ export default function Auth() {
                 رجوع
               </Button>
               <Button
-                className="flex-1 h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold text-white gap-2"
+                className="flex-1 h-12 rounded-xl bg-zinc-900 hover:bg-zinc-800 font-bold text-white gap-2"
                 onClick={handleRegStep2}
               >
                 التالي
@@ -300,9 +299,7 @@ export default function Auth() {
           <div className="w-full max-w-md">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/30 mb-4">
-                <Building2 className="h-5 w-5 text-blue-400" />
-              </div>
+              <MaddMark className="inline-block h-12 w-12 text-zinc-300 mb-4" />
               <h1 className="text-2xl font-extrabold text-white">شركة توريدات مَـد</h1>
               <p className="text-white/35 text-xs mt-1 uppercase tracking-widest">Saudi Arabia</p>
             </div>
@@ -326,8 +323,8 @@ export default function Auth() {
                 <div className="flex items-center gap-2 mb-8">
                   {[1, 2, 3].map((s) => (
                     <div key={s} className="flex items-center gap-2 flex-1">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${s <= step ? "bg-blue-600 text-white" : "bg-white/10 text-white/30"}`}>{s}</div>
-                      {s < 3 && <div className={`flex-1 h-px ${s < step ? "bg-blue-600" : "bg-white/10"}`} />}
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${s <= step ? "bg-zinc-900 text-white" : "bg-white/10 text-white/30"}`}>{s}</div>
+                      {s < 3 && <div className={`flex-1 h-px ${s < step ? "bg-zinc-900" : "bg-white/10"}`} />}
                     </div>
                   ))}
                 </div>
@@ -386,7 +383,7 @@ export default function Auth() {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold text-white mt-2"
+                    className="w-full h-12 rounded-xl bg-zinc-900 hover:bg-zinc-800 font-bold text-white mt-2"
                     disabled={loading}
                   >
                     {loading ? "جارٍ تسجيل الدخول..." : "تسجيل الدخول · Sign In"}
@@ -397,7 +394,7 @@ export default function Auth() {
                   <button
                     type="button"
                     onClick={() => { setTab("register"); setStep(1); }}
-                    className="text-blue-400 font-bold hover:text-blue-300 transition"
+                    className="text-zinc-400 font-bold hover:text-zinc-300 transition"
                     data-testid="link-goto-register"
                   >
                     سجّل الآن
@@ -459,7 +456,7 @@ export default function Auth() {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold text-white mt-2 gap-2"
+                    className="w-full h-12 rounded-xl bg-zinc-900 hover:bg-zinc-800 font-bold text-white mt-2 gap-2"
                   >
                     التالي
                     <ArrowRight className="h-4 w-4" />
@@ -470,7 +467,7 @@ export default function Auth() {
                   <button
                     type="button"
                     onClick={() => { setTab("login"); setStep(1); }}
-                    className="text-blue-400 font-bold hover:text-blue-300 transition"
+                    className="text-zinc-400 font-bold hover:text-zinc-300 transition"
                     data-testid="link-goto-login"
                   >
                     تسجيل الدخول
@@ -483,7 +480,7 @@ export default function Auth() {
               {tab === "register" && step === 3 && (
                 <form onSubmit={handleRegStep3} className="space-y-4">
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] mb-2">
-                    {selectedRole && (() => { const Icon = selectedRole.icon; return <Icon className="h-5 w-5 text-blue-400 shrink-0" />; })()}
+                    {selectedRole && (() => { const Icon = selectedRole.icon; return <Icon className="h-5 w-5 text-zinc-400 shrink-0" />; })()}
                     <div>
                       <div className="text-sm font-bold text-white">{selectedRole?.label}</div>
                       <div className="text-[10px] text-white/40 uppercase tracking-widest">{selectedRole?.sub}</div>
@@ -526,7 +523,7 @@ export default function Auth() {
                     </Button>
                     <Button
                       type="submit"
-                      className="flex-1 h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold text-white"
+                      className="flex-1 h-12 rounded-xl bg-zinc-900 hover:bg-zinc-800 font-bold text-white"
                       disabled={loading}
                     >
                       {loading ? "جارٍ إنشاء الحساب..." : "إنشاء الحساب"}

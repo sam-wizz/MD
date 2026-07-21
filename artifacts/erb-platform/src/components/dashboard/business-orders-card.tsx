@@ -15,11 +15,11 @@ export function BusinessOrdersCard() {
     <Card className="rounded-sm border-slate-200 shadow-sm" data-testid="card-my-orders">
       <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-4 flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-          <Package className="h-4 w-4 text-blue-600" />
+          <Package className="h-4 w-4 text-zinc-800" />
           طلبات التوريد · My Orders
         </CardTitle>
         <Link href="/orders/new">
-          <Button size="sm" className="rounded-sm bg-blue-600 hover:bg-blue-500 text-white font-bold" data-testid="button-new-order">
+          <Button size="sm" className="rounded-sm bg-zinc-900 hover:bg-zinc-700 text-white font-bold" data-testid="button-new-order">
             <Plus className="h-4 w-4 ml-1" /> طلب جديد
           </Button>
         </Link>

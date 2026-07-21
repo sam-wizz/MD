@@ -52,13 +52,13 @@ export function SupplierPricesCard() {
   };
 
   const selectCls =
-    "h-9 rounded-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500";
+    "h-9 rounded-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-zinc-500";
 
   return (
     <Card className="rounded-sm border-slate-200 shadow-sm" data-testid="card-my-prices">
       <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-4">
         <CardTitle className="text-base flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-          <Tags className="h-4 w-4 text-blue-600" />
+          <Tags className="h-4 w-4 text-zinc-800" />
           قائمة أسعاري · My Price List
         </CardTitle>
         <p className="text-xs text-slate-400 font-medium pt-1">
@@ -104,7 +104,7 @@ export function SupplierPricesCard() {
           <Button
             onClick={submit}
             disabled={createPrice.isPending}
-            className="h-9 rounded-sm bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
+            className="h-9 rounded-sm bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-xs"
             data-testid="button-add-price"
           >
             <Plus className="h-4 w-4 ml-1" /> إضافة
@@ -127,7 +127,7 @@ export function SupplierPricesCard() {
                   <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{p.product_name}</span>
                   <span className="text-xs text-slate-400 mr-2">{p.category} · لكل {p.unit}</span>
                 </div>
-                <span className="text-sm font-extrabold text-blue-700 dark:text-blue-400 whitespace-nowrap">
+                <span className="text-sm font-extrabold text-zinc-800 dark:text-zinc-400 whitespace-nowrap">
                   {Number(p.price).toLocaleString("ar-SA")} ر.س
                 </span>
                 <button

@@ -58,7 +58,7 @@ export default function OrdersNew() {
   };
 
   const selectCls =
-    "h-10 w-full rounded-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500";
+    "h-10 w-full rounded-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-zinc-500";
   const labelCls = "text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5";
 
   return (
@@ -67,7 +67,7 @@ export default function OrdersNew() {
       <main className="flex-1 container mx-auto px-4 py-8 max-w-2xl">
         <button
           onClick={() => setLocation("/dashboard")}
-          className="text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 mb-4"
+          className="text-xs font-bold text-slate-500 hover:text-zinc-800 transition-colors flex items-center gap-1.5 mb-4"
           data-testid="link-back-dashboard"
         >
           <ArrowRight className="h-3.5 w-3.5" /> العودة للوحة التحكم
@@ -76,7 +76,7 @@ export default function OrdersNew() {
         <Card className="rounded-sm border-slate-200 shadow-sm">
           <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-5">
             <CardTitle className="text-xl flex items-center gap-2.5 font-extrabold text-slate-900 dark:text-white">
-              <PackagePlus className="h-5 w-5 text-blue-600" />
+              <PackagePlus className="h-5 w-5 text-zinc-800" />
               طلب توريد جديد
             </CardTitle>
             <p className="text-xs text-slate-400 font-medium pt-1">
@@ -159,7 +159,7 @@ export default function OrdersNew() {
             <Button
               onClick={submit}
               disabled={createOrder.isPending}
-              className="w-full rounded-sm bg-blue-600 hover:bg-blue-500 text-white font-extrabold h-11"
+              className="w-full rounded-sm bg-zinc-900 hover:bg-zinc-700 text-white font-extrabold h-11"
               data-testid="button-submit-order"
             >
               {createOrder.isPending ? "جارٍ الإرسال..." : "إرسال الطلب للإدارة"}

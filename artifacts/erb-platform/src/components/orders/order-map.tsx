@@ -58,7 +58,7 @@ export function OrderMap({ supplierRegion, deliveryRegion, status }: Props) {
       <div className="rounded-sm border border-slate-200 bg-slate-50 p-6" data-testid="map-fallback">
         <div className="flex items-center justify-between gap-4 mb-5">
           <div className="flex items-center gap-2 text-sm font-bold text-slate-700">
-            <Truck className="h-4 w-4 text-blue-600" />
+            <Truck className="h-4 w-4 text-zinc-800" />
             {supplierRegion ? `من ${origin.name}` : "بانتظار تحديد المورد"}
           </div>
           <div className="flex items-center gap-2 text-sm font-bold text-slate-700">
@@ -68,7 +68,7 @@ export function OrderMap({ supplierRegion, deliveryRegion, status }: Props) {
         </div>
         <div className="relative h-2 rounded-full bg-slate-200 overflow-hidden">
           <div
-            className="absolute inset-y-0 right-0 bg-blue-600 rounded-full transition-all"
+            className="absolute inset-y-0 right-0 bg-zinc-900 rounded-full transition-all"
             style={{ width: `${Math.round(meta.progress * 100)}%` }}
           />
         </div>

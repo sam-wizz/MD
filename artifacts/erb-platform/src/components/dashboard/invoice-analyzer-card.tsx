@@ -74,7 +74,7 @@ export function InvoiceAnalyzerCard() {
     <Card className="rounded-sm border-slate-200 shadow-sm" data-testid="card-invoice-analyzer">
       <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-4">
         <CardTitle className="text-base flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-          <FileScan className="h-4 w-4 text-blue-600" />
+          <FileScan className="h-4 w-4 text-zinc-800" />
           مقارنة فواتيرك السابقة · Invoice Comparison
         </CardTitle>
         <p className="text-xs text-slate-400 font-medium pt-1">
@@ -94,7 +94,7 @@ export function InvoiceAnalyzerCard() {
           <Button
             onClick={() => fileRef.current?.click()}
             disabled={analyze.isPending}
-            className="rounded-sm bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
+            className="rounded-sm bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-xs"
             data-testid="button-upload-invoice"
           >
             {analyze.isPending ? (
@@ -138,12 +138,12 @@ export function InvoiceAnalyzerCard() {
         {shown && (
           <div className="space-y-3" data-testid="panel-analysis-result">
             {shown.summary && (
-              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 rounded-sm p-3.5">
+              <div className="bg-zinc-50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-900 rounded-sm p-3.5">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <Sparkles className="h-4 w-4 text-blue-600" />
-                  <span className="text-xs font-extrabold text-blue-800 dark:text-blue-300">خلاصة الذكاء الاصطناعي</span>
+                  <Sparkles className="h-4 w-4 text-zinc-800" />
+                  <span className="text-xs font-extrabold text-zinc-900 dark:text-zinc-300">خلاصة الذكاء الاصطناعي</span>
                 </div>
-                <p className="text-sm text-blue-900/80 dark:text-blue-200/80 leading-relaxed">{shown.summary}</p>
+                <p className="text-sm text-zinc-900/80 dark:text-zinc-200/80 leading-relaxed">{shown.summary}</p>
               </div>
             )}
 
@@ -175,7 +175,7 @@ export function InvoiceAnalyzerCard() {
                       <tr key={i}>
                         <td className="p-2.5 font-bold text-slate-700 dark:text-slate-200">{r.item || "—"}</td>
                         <td className="p-2.5 text-slate-600 dark:text-slate-300">{r.invoice_price || "—"}</td>
-                        <td className="p-2.5 font-bold text-blue-700 dark:text-blue-400">{r.platform_price || "غير متوفر"}</td>
+                        <td className="p-2.5 font-bold text-zinc-800 dark:text-zinc-400">{r.platform_price || "غير متوفر"}</td>
                         <td className="p-2.5 text-slate-500">{r.platform_supplier || (r.note ? <span className="text-slate-400">{r.note}</span> : "—")}</td>
                       </tr>
                     ))}

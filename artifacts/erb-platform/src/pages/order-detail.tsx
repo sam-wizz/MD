@@ -55,7 +55,7 @@ export default function OrderDetail({ id }: { id: string }) {
       <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
         <button
           onClick={() => setLocation("/dashboard")}
-          className="text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 mb-4"
+          className="text-xs font-bold text-slate-500 hover:text-zinc-800 transition-colors flex items-center gap-1.5 mb-4"
           data-testid="link-back-dashboard"
         >
           <ArrowRight className="h-3.5 w-3.5" /> العودة للوحة التحكم
@@ -75,7 +75,7 @@ export default function OrderDetail({ id }: { id: string }) {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
-                  <Package className="h-6 w-6 text-blue-600" />
+                  <Package className="h-6 w-6 text-zinc-800" />
                   طلب التوريد #{order.id}
                 </h1>
                 <p className="text-xs text-slate-400 font-semibold mt-1">
@@ -118,14 +118,14 @@ export default function OrderDetail({ id }: { id: string }) {
                       return (
                         <div key={s} className={`flex items-center ${isLast ? "" : "flex-1"}`}>
                           <div className="flex flex-col items-center gap-1.5 shrink-0">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${done ? "bg-blue-600 border-blue-600 text-white" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-300"}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${done ? "bg-zinc-900 border-zinc-600 text-white" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-300"}`}>
                               {done ? <CheckCircle2 className="h-4 w-4" /> : <span className="text-[10px] font-bold">{i + 1}</span>}
                             </div>
-                            <span className={`text-[9px] font-bold whitespace-nowrap ${done ? "text-blue-700 dark:text-blue-400" : "text-slate-400"}`}>
+                            <span className={`text-[9px] font-bold whitespace-nowrap ${done ? "text-zinc-800 dark:text-zinc-400" : "text-slate-400"}`}>
                               {sMeta.ar}
                             </span>
                           </div>
-                          {!isLast && <div className={`flex-1 h-0.5 mx-1.5 mb-5 ${flowIndex > i ? "bg-blue-600" : "bg-slate-200 dark:bg-slate-800"}`} />}
+                          {!isLast && <div className={`flex-1 h-0.5 mx-1.5 mb-5 ${flowIndex > i ? "bg-zinc-900" : "bg-slate-200 dark:bg-slate-800"}`} />}
                         </div>
                       );
                     })}
@@ -149,7 +149,7 @@ export default function OrderDetail({ id }: { id: string }) {
             <Card className="rounded-sm border-slate-200 shadow-sm">
               <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-4">
                 <CardTitle className="text-base flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-                  <MapPin className="h-4 w-4 text-blue-600" />
+                  <MapPin className="h-4 w-4 text-zinc-800" />
                   مسار التوريد · Delivery Route
                 </CardTitle>
               </CardHeader>
@@ -204,15 +204,15 @@ export default function OrderDetail({ id }: { id: string }) {
                       <div className="text-sm font-bold text-slate-800 dark:text-slate-100 mt-0.5">{order.business_company}</div>
                       <div className="text-xs text-slate-400">{order.business_contact}</div>
                       {order.business_phone && (
-                        <a href={`tel:${order.business_phone}`} className="text-xs text-blue-600 font-bold flex items-center gap-1 mt-1">
+                        <a href={`tel:${order.business_phone}`} className="text-xs text-zinc-800 font-bold flex items-center gap-1 mt-1">
                           <Phone className="h-3 w-3" /> <span dir="ltr">{order.business_phone}</span>
                         </a>
                       )}
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900 p-2 rounded-sm">
-                      <Package className="h-4 w-4 text-blue-600" />
+                    <div className="bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-100 dark:border-zinc-900 p-2 rounded-sm">
+                      <Package className="h-4 w-4 text-zinc-800" />
                     </div>
                     <div>
                       <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">المورد المكلف</div>
@@ -227,10 +227,10 @@ export default function OrderDetail({ id }: { id: string }) {
                     </div>
                   </div>
                   {rec?.reasoning_ar && order.assigned_supplier_company && (
-                    <div className="bg-blue-50/60 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 rounded-sm p-3">
+                    <div className="bg-zinc-50/60 dark:bg-zinc-950/20 border border-zinc-100 dark:border-zinc-900 rounded-sm p-3">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Sparkles className="h-3.5 w-3.5 text-blue-600" />
-                        <span className="text-[10px] font-extrabold text-blue-700 dark:text-blue-400">لماذا هذا المورد؟</span>
+                        <Sparkles className="h-3.5 w-3.5 text-zinc-800" />
+                        <span className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-400">لماذا هذا المورد؟</span>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{rec.reasoning_ar}</p>
                     </div>

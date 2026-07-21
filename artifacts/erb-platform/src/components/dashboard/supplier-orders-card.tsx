@@ -38,7 +38,7 @@ export function SupplierOrdersCard() {
     <Card className="rounded-sm border-slate-200 shadow-sm" data-testid="card-assigned-orders">
       <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 py-4">
         <CardTitle className="text-base flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-          <ClipboardList className="h-4 w-4 text-blue-600" />
+          <ClipboardList className="h-4 w-4 text-zinc-800" />
           الطلبات المسندة إليك · Assigned Orders
         </CardTitle>
       </CardHeader>
@@ -76,7 +76,7 @@ export function SupplierOrdersCard() {
                     {action && (
                       <Button
                         size="sm"
-                        className="rounded-sm bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
+                        className="rounded-sm bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-xs"
                         disabled={updateStatus.isPending}
                         onClick={() => updateStatus.mutate({ id: o.id, data: { status: action.next } })}
                         data-testid={`button-status-${o.id}`}

@@ -3,8 +3,21 @@ import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { Building2, LogOut, LayoutDashboard, ChevronLeft, ShieldCheck, Sun, Moon } from "lucide-react";
+import { LogOut, LayoutDashboard, ChevronLeft, ShieldCheck, Sun, Moon } from "lucide-react";
 import { useGetMyAccess, getGetMyAccessQueryKey } from "@workspace/api-client-react";
+
+export function MaddMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 120 120" fill="none" className={className} aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="7" strokeLinecap="round">
+        <circle cx="60" cy="60" r="52" />
+        <path d="M 60 22 A 38 38 0 1 0 98 60" />
+        <path d="M 60 36 A 24 24 0 1 0 84 60" />
+        <path d="M 60 50 A 10 10 0 1 0 70 60" />
+      </g>
+    </svg>
+  );
+}
 
 export function MainNav() {
   const { user } = useAuth();
@@ -24,12 +37,10 @@ export function MainNav() {
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 to-transparent pointer-events-none" />
       <div className="container mx-auto px-4 h-20 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-4 group" data-testid="link-home">
-          <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-2.5 rounded-sm shadow-lg shadow-blue-900/20 group-hover:shadow-blue-900/40 transition-all duration-500 border border-blue-500/20">
-            <Building2 className="h-5 w-5 text-white" />
-          </div>
+          <MaddMark className="h-11 w-11 text-white group-hover:text-zinc-300 transition-colors duration-500" />
           <div className="flex flex-col leading-tight">
-            <span className="font-extrabold text-xl tracking-tight text-white group-hover:text-blue-50 transition-colors duration-300">شركة توريدات مَـد</span>
-            <span className="font-display text-[10px] text-blue-400/80 font-bold tracking-[0.25em] uppercase hidden sm:block mt-0.5">Saudi Arabia</span>
+            <span className="font-extrabold text-xl tracking-tight text-white group-hover:text-zinc-50 transition-colors duration-300">شركة توريدات مَـد</span>
+            <span className="font-display text-[10px] text-zinc-400/80 font-bold tracking-[0.35em] uppercase hidden sm:block mt-0.5">M D — Saudi Arabia</span>
           </div>
         </Link>
         <div className="flex items-center gap-4">
@@ -45,7 +56,7 @@ export function MainNav() {
           {user ? (
             <>
               {access?.is_admin && (
-                <Link href="/admin" data-testid="link-admin" className="inline-flex items-center justify-center gap-2 rounded-sm h-10 px-4 text-blue-300 hover:text-white hover:bg-blue-600/20 transition-colors duration-300 font-semibold border border-blue-500/20">
+                <Link href="/admin" data-testid="link-admin" className="inline-flex items-center justify-center gap-2 rounded-sm h-10 px-4 text-zinc-300 hover:text-white hover:bg-zinc-600/20 transition-colors duration-300 font-semibold border border-zinc-500/20">
                   <ShieldCheck className="h-4 w-4" />
                   <span>الإدارة</span>
                 </Link>
@@ -62,7 +73,7 @@ export function MainNav() {
           ) : (
             <Link href="/auth" data-testid="link-login" className="inline-flex items-center justify-center rounded-sm font-bold border border-white/15 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md gap-2 h-10 px-6 transition-all duration-300 group">
               تسجيل الدخول
-              <ChevronLeft className="h-4 w-4 text-blue-400 group-hover:-translate-x-0.5 transition-transform" />
+              <ChevronLeft className="h-4 w-4 text-zinc-400 group-hover:-translate-x-0.5 transition-transform" />
             </Link>
           )}
         </div>

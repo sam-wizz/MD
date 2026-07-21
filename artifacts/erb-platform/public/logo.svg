@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 140" fill="none">
+  <g stroke="#1f1f1f" stroke-width="6" stroke-linecap="round">
+    <circle cx="330" cy="62" r="48"/>
+    <path d="M 330 26 A 36 36 0 1 0 366 62"/>
+    <path d="M 330 40 A 22 22 0 1 0 352 62"/>
+    <path d="M 330 53 A 9 9 0 1 0 339 62"/>
+  </g>
+  <text x="255" y="86" text-anchor="end" direction="rtl" style="font-family:'IBM Plex Sans Arabic','Cairo','Segoe UI',sans-serif;font-size:64px;font-weight:600;fill:#1f1f1f">مَـد</text>
+  <text x="185" y="120" text-anchor="middle" style="font-family:'Space Grotesk','Segoe UI',sans-serif;font-size:16px;letter-spacing:12px;fill:#8a8a8a">M D</text>
+</svg>

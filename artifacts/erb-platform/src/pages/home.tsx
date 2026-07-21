@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
-import { MainNav } from "@/components/layout/main-nav";
+import { MainNav, MaddMark } from "@/components/layout/main-nav";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { 
-  Building2, 
-  ChevronLeft, 
+import {
+  ChevronLeft,
   PackageCheck, 
   ArrowLeftRight, 
   CheckCircle2,
@@ -70,7 +69,7 @@ function Reveal({ children, delay = 0, className = "", direction = "up" }: { chi
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col font-sans text-slate-50 selection:bg-blue-600/30 selection:text-white">
+    <div className="min-h-screen bg-slate-950 flex flex-col font-sans text-slate-50 selection:bg-zinc-600/30 selection:text-white">
       <MainNav />
       <main className="flex-1">
 
@@ -92,9 +91,9 @@ export default function Home() {
           
           <div className="container mx-auto px-4 relative z-10 flex flex-col items-start justify-center h-full">
             <Reveal>
-              <div className="inline-flex items-center gap-3 bg-blue-900/20 border border-blue-500/20 rounded-full px-4 py-1.5 mb-10 backdrop-blur-md shadow-[0_0_20px_rgba(37,99,235,0.15)]">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(37,99,235,0.8)] animate-pulse"></span>
-                <span className="font-display text-blue-300 text-[10px] font-bold tracking-[0.25em] uppercase mt-0.5">National Supply Grid · KSA</span>
+              <div className="inline-flex items-center gap-3 bg-zinc-900/20 border border-zinc-500/20 rounded-full px-4 py-1.5 mb-10 backdrop-blur-md shadow-[0_0_20px_rgba(37,99,235,0.15)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-800 shadow-[0_0_10px_rgba(37,99,235,0.8)] animate-pulse"></span>
+                <span className="font-display text-zinc-300 text-[10px] font-bold tracking-[0.25em] uppercase mt-0.5">National Supply Grid · KSA</span>
               </div>
             </Reveal>
             
@@ -107,7 +106,7 @@ export default function Home() {
               </Reveal>
               
               <Reveal delay={300}>
-                <div className="w-12 h-[2px] bg-blue-600 mb-6 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
+                <div className="w-12 h-[2px] bg-zinc-900 mb-6 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-slate-100 mb-8 leading-snug drop-shadow-lg">
                   لتزويد منشأتك بكل احتياجاتها
                 </h2>
@@ -127,7 +126,7 @@ export default function Home() {
                   className="h-14 px-8 text-lg font-bold border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-sm transition-all duration-300 backdrop-blur-md group flex items-center gap-3"
                 >
                   اكتشف المنظومة
-                  <ChevronLeft className="h-5 w-5 text-blue-400 group-hover:-translate-x-1 transition-transform" />
+                  <ChevronLeft className="h-5 w-5 text-zinc-400 group-hover:-translate-x-1 transition-transform" />
                 </Button>
               </Reveal>
             </div>
@@ -150,9 +149,9 @@ export default function Home() {
             ].map((stat, i) => (
               <Reveal key={i} delay={300 + (i * 100)} direction="scale">
                 <div className="bg-slate-950/80 p-8 text-center flex flex-col justify-center items-center h-full hover:bg-slate-900 transition-colors border border-transparent hover:border-white/5 group">
-                  <div className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md group-hover:scale-110 group-hover:text-blue-400 transition-all duration-500">{stat.value}</div>
+                  <div className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md group-hover:scale-110 group-hover:text-zinc-400 transition-all duration-500">{stat.value}</div>
                   <div className="text-sm font-bold text-slate-300 mb-2">{stat.label}</div>
-                  <div className="font-display text-[9px] font-bold tracking-[0.2em] text-blue-500/70 uppercase">{stat.en}</div>
+                  <div className="font-display text-[9px] font-bold tracking-[0.2em] text-zinc-500/70 uppercase">{stat.en}</div>
                 </div>
               </Reveal>
             ))}
@@ -162,15 +161,15 @@ export default function Home() {
         {/* Operation Mechanics */}
         <section id="mechanics" className="pt-40 pb-32 relative bg-slate-950 overflow-hidden">
           {/* Background ambient light */}
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-zinc-600/5 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
           
           <div className="container mx-auto px-4">
             <Reveal>
               <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
                 <div className="max-w-2xl">
                   <div className="inline-flex items-center gap-2 mb-4">
-                    <div className="w-8 h-[2px] bg-blue-500"></div>
-                    <h2 className="font-display text-blue-400 text-[10px] font-bold tracking-[0.25em] uppercase mt-0.5">Operation Mechanics</h2>
+                    <div className="w-8 h-[2px] bg-zinc-800"></div>
+                    <h2 className="font-display text-zinc-400 text-[10px] font-bold tracking-[0.25em] uppercase mt-0.5">Operation Mechanics</h2>
                   </div>
                   <h3 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">آلية العمل والتشغيل</h3>
                   <p className="text-lg text-slate-400 leading-relaxed font-medium">
@@ -180,8 +179,8 @@ export default function Home() {
                 <div className="hidden md:block">
                   {/* Decorative tech element */}
                   <div className="w-24 h-24 border border-white/5 rounded-full flex items-center justify-center relative shadow-[0_0_30px_rgba(37,99,235,0.05)]">
-                    <div className="absolute inset-2 border border-blue-500/20 rounded-full animate-[spin_10s_linear_infinite]" />
-                    <Activity className="text-blue-500/40 w-8 h-8" />
+                    <div className="absolute inset-2 border border-zinc-500/20 rounded-full animate-[spin_10s_linear_infinite]" />
+                    <Activity className="text-zinc-500/40 w-8 h-8" />
                   </div>
                 </div>
               </div>
@@ -189,7 +188,7 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-6 relative max-w-6xl mx-auto">
               {/* Connector line for desktop */}
-              <div className="hidden md:block absolute top-[5rem] left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent z-0" />
+              <div className="hidden md:block absolute top-[5rem] left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-500/30 to-transparent z-0" />
 
               {[
                 {
@@ -218,18 +217,18 @@ export default function Home() {
                 }
               ].map((phase, i) => (
                 <Reveal key={i} delay={i * 150} direction="up">
-                  <div className="relative z-10 bg-slate-900/40 backdrop-blur-md border border-white/10 p-10 rounded-sm hover:border-blue-500/40 hover:bg-slate-900/80 transition-all duration-500 group flex flex-col h-full overflow-hidden shadow-2xl">
+                  <div className="relative z-10 bg-slate-900/40 backdrop-blur-md border border-white/10 p-10 rounded-sm hover:border-zinc-500/40 hover:bg-slate-900/80 transition-all duration-500 group flex flex-col h-full overflow-hidden shadow-2xl">
                     {/* Glow effect on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-transparent transition-all duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-zinc-500/0 to-zinc-500/0 group-hover:from-zinc-500/5 group-hover:to-transparent transition-all duration-500" />
                     
-                    <div className="text-8xl font-black text-white/5 absolute -top-4 -left-4 select-none group-hover:text-blue-500/10 group-hover:-translate-y-2 group-hover:translate-x-2 transition-all duration-500 font-display">{phase.step}</div>
+                    <div className="text-8xl font-black text-white/5 absolute -top-4 -left-4 select-none group-hover:text-zinc-500/10 group-hover:-translate-y-2 group-hover:translate-x-2 transition-all duration-500 font-display">{phase.step}</div>
                     
-                    <div className="w-20 h-20 bg-slate-950 border border-white/10 flex items-center justify-center rounded-sm mb-10 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative z-20 group-hover:border-blue-500/50 group-hover:shadow-[0_0_30px_rgba(37,99,235,0.2)] transition-all duration-500">
-                      <phase.icon className="h-8 w-8 text-slate-400 group-hover:text-blue-400 group-hover:scale-110 transition-all duration-500" />
+                    <div className="w-20 h-20 bg-slate-950 border border-white/10 flex items-center justify-center rounded-sm mb-10 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative z-20 group-hover:border-zinc-500/50 group-hover:shadow-[0_0_30px_rgba(37,99,235,0.2)] transition-all duration-500">
+                      <phase.icon className="h-8 w-8 text-slate-400 group-hover:text-zinc-400 group-hover:scale-110 transition-all duration-500" />
                     </div>
                     
                     <h4 className="text-2xl font-bold text-white mb-2 relative z-20">{phase.title}</h4>
-                    <p className="font-display text-[10px] font-bold text-blue-400/80 tracking-[0.2em] uppercase mb-6 relative z-20">{phase.en}</p>
+                    <p className="font-display text-[10px] font-bold text-zinc-400/80 tracking-[0.2em] uppercase mb-6 relative z-20">{phase.en}</p>
                     <p className="text-slate-400 leading-relaxed text-base mb-10 flex-1 relative z-20 font-medium">{phase.desc}</p>
                     
                     <div className="flex flex-wrap gap-2 mt-auto relative z-20">
@@ -261,8 +260,8 @@ export default function Home() {
             <div className="flex-1 md:w-1/2">
               <Reveal>
                 <div className="inline-flex items-center gap-2 mb-6">
-                  <div className="w-8 h-[2px] bg-blue-500 shadow-[0_0_10px_rgba(37,99,235,0.8)]"></div>
-                  <span className="font-display text-blue-400 text-[10px] font-bold tracking-[0.25em] uppercase mt-0.5">Engineered for Scale</span>
+                  <div className="w-8 h-[2px] bg-zinc-800 shadow-[0_0_10px_rgba(37,99,235,0.8)]"></div>
+                  <span className="font-display text-zinc-400 text-[10px] font-bold tracking-[0.25em] uppercase mt-0.5">Engineered for Scale</span>
                 </div>
                 <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-8 leading-[1.1] tracking-tight">منصة موحدة<br />مبنية للتوسع</h3>
                 <p className="text-lg md:text-xl text-slate-400 mb-12 leading-relaxed font-medium border-r-2 border-white/10 pr-6">
@@ -281,7 +280,7 @@ export default function Home() {
                     { title: "دعم مخصص", desc: "مدير حساب شخصي لضمان سلاسة عملياتك اليومية." }
                   ].map((feature, i) => (
                     <div key={i} className="bg-slate-950/60 backdrop-blur-md border border-white/5 p-6 rounded-sm hover:bg-white/5 hover:border-white/10 transition-all duration-300 group">
-                      <CheckCircle2 className="h-6 w-6 text-blue-500 mb-4 group-hover:scale-110 transition-transform" />
+                      <CheckCircle2 className="h-6 w-6 text-zinc-500 mb-4 group-hover:scale-110 transition-transform" />
                       <h4 className="font-bold text-white mb-2 text-lg">{feature.title}</h4>
                       <p className="text-sm text-slate-400 leading-relaxed font-medium">{feature.desc}</p>
                     </div>
@@ -307,24 +306,24 @@ export default function Home() {
               
               {/* Decorative metric */}
               <div className="absolute bottom-12 right-12 bg-slate-950/80 backdrop-blur-md border border-white/10 p-6 rounded-sm max-w-[200px] hidden md:block">
-                <div className="font-display text-[10px] font-bold tracking-[0.2em] text-blue-400 uppercase mb-2">Live Tracking</div>
+                <div className="font-display text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase mb-2">Live Tracking</div>
                 <div className="text-2xl font-black text-white">100% Visibility</div>
               </div>
             </div>
             
             <div className="md:w-1/2 bg-slate-950 p-12 md:p-24 lg:p-32 flex items-center justify-center relative">
               {/* Subtle background element */}
-              <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/10 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-900/10 via-transparent to-transparent pointer-events-none" />
               
               <Reveal className="w-full max-w-xl">
                 <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-8 leading-[1.15] tracking-tight">
                   نجمع سلاسل التوريد،<br />
-                  <span className="text-blue-400">ونرقمن عملية الإمداد.</span>
+                  <span className="text-zinc-400">ونرقمن عملية الإمداد.</span>
                 </h3>
                 <p className="text-lg md:text-xl text-slate-400 mb-12 leading-relaxed font-medium">
                   نوحّد سلاسل التوريد في منظومة رقمية واحدة — نراقب المنتجات في كل مرحلة، ونتتبع كل شحنة لحظة بلحظة، ليصل كل صنف إلى منشأتك بحالته المثالية ودون انقطاع.
                 </p>
-                <Link href="/auth" className="inline-flex items-center justify-center h-14 px-10 text-lg font-bold bg-white text-slate-950 hover:bg-blue-50 rounded-sm gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.25)] group">
+                <Link href="/auth" className="inline-flex items-center justify-center h-14 px-10 text-lg font-bold bg-white text-slate-950 hover:bg-zinc-50 rounded-sm gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.25)] group">
                   انضم لشبكة مَـد
                   <ChevronLeft className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
                 </Link>
@@ -340,9 +339,7 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16">
             <div className="flex flex-col items-center md:items-start gap-4">
-              <div className="bg-gradient-to-br from-blue-600 to-blue-900 p-3 rounded-sm shadow-lg shadow-blue-900/20 border border-blue-500/20">
-                <Building2 className="h-7 w-7 text-white" />
-              </div>
+              <MaddMark className="h-14 w-14 text-white" />
               <div className="text-center md:text-right">
                 <p className="text-xl font-black tracking-tight text-white mb-1">شركة توريدات مَـد</p>
                 <p className="font-display text-xs font-bold tracking-[0.3em] text-slate-500 uppercase mt-1">Madd Supplies Co.</p>
@@ -361,7 +358,7 @@ export default function Home() {
             <p>
               © {new Date().getFullYear()} شركة توريدات مَـد. المملكة العربية السعودية. جميع الحقوق محفوظة.
             </p>
-            <p className="font-display tracking-[0.2em] uppercase text-blue-500/50">
+            <p className="font-display tracking-[0.2em] uppercase text-zinc-500/50">
               Critical National Infrastructure
             </p>
           </div>

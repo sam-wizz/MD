@@ -112,8 +112,8 @@ export default function Admin() {
       onClick={() => setTab(t)}
       className={`flex items-center gap-2 px-4 h-10 rounded-sm text-xs font-extrabold border transition-colors ${
         tab === t
-          ? "bg-blue-600 text-white border-blue-600"
-          : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-300"
+          ? "bg-zinc-900 text-white border-zinc-600"
+          : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-zinc-300"
       }`}
       data-testid={`tab-${t}`}
     >
@@ -130,7 +130,7 @@ export default function Admin() {
       <main className="flex-1 container mx-auto px-4 py-8 max-w-6xl">
         <div className="mb-8">
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-            <ShieldCheck className="h-7 w-7 text-blue-600" />
+            <ShieldCheck className="h-7 w-7 text-zinc-800" />
             لوحة الإدارة
           </h1>
           <p className="text-slate-400 text-xs font-semibold uppercase tracking-widest mt-0.5">Madd Operations Panel</p>
@@ -179,7 +179,7 @@ export default function Admin() {
                     <CardContent className="p-5 space-y-3">
                       <div className="flex flex-wrap items-center gap-3">
                         <span className={`w-2.5 h-2.5 rounded-full ${meta.dot}`} />
-                        <Link href={`/orders/${o.id}`} className="text-sm font-extrabold text-slate-900 dark:text-white hover:text-blue-600 transition-colors">
+                        <Link href={`/orders/${o.id}`} className="text-sm font-extrabold text-slate-900 dark:text-white hover:text-zinc-800 transition-colors">
                           #{o.id} · {o.business_company}
                         </Link>
                         <span className="text-xs text-slate-400">{o.product_category} · إلى {o.delivery_region}</span>
@@ -197,19 +197,19 @@ export default function Admin() {
                       )}
 
                       {rec && (
-                        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 rounded-sm p-3.5 space-y-2" data-testid={`panel-ai-rec-${o.id}`}>
+                        <div className="bg-zinc-50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-900 rounded-sm p-3.5 space-y-2" data-testid={`panel-ai-rec-${o.id}`}>
                           <div className="flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-blue-600" />
-                            <span className="text-xs font-extrabold text-blue-800 dark:text-blue-300">
+                            <Sparkles className="h-4 w-4 text-zinc-800" />
+                            <span className="text-xs font-extrabold text-zinc-900 dark:text-zinc-300">
                               توصية الذكاء الاصطناعي: {rec.supplier_company}
                               {rec.estimated_total && ` · تكلفة تقديرية ${rec.estimated_total} ر.س`}
                             </span>
                           </div>
-                          {rec.reasoning_ar && <p className="text-xs text-blue-900/70 dark:text-blue-200/70 leading-relaxed">{rec.reasoning_ar}</p>}
+                          {rec.reasoning_ar && <p className="text-xs text-zinc-900/70 dark:text-zinc-200/70 leading-relaxed">{rec.reasoning_ar}</p>}
                           {!!rec.ranking?.length && (
                             <div className="flex flex-wrap gap-1.5 pt-1">
                               {rec.ranking.slice(0, 4).map((r, i) => (
-                                <span key={i} className="text-[10px] font-bold bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900 rounded-sm px-2 py-1 text-slate-600 dark:text-slate-300">
+                                <span key={i} className="text-[10px] font-bold bg-white dark:bg-slate-900 border border-zinc-100 dark:border-zinc-900 rounded-sm px-2 py-1 text-slate-600 dark:text-slate-300">
                                   {i + 1}. {r.supplier_company} {r.estimated_total ? `· ${r.estimated_total} ر.س` : ""}
                                 </span>
                               ))}
@@ -247,7 +247,7 @@ export default function Admin() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="rounded-sm font-bold text-xs text-blue-700 border-blue-200 hover:bg-blue-50"
+                              className="rounded-sm font-bold text-xs text-zinc-800 border-zinc-200 hover:bg-zinc-50"
                               disabled={recommend.isPending}
                               onClick={() => recommend.mutate({ id: o.id })}
                               data-testid={`button-recommend-${o.id}`}
@@ -268,7 +268,7 @@ export default function Admin() {
                             </select>
                             <Button
                               size="sm"
-                              className="rounded-sm bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
+                              className="rounded-sm bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-xs"
                               disabled={actOnOrder.isPending || !chosenSupplier[o.id]}
                               onClick={() => actOnOrder.mutate({ id: o.id, data: { action: "assign", supplier_id: chosenSupplier[o.id] } })}
                               data-testid={`button-assign-${o.id}`}
@@ -303,7 +303,7 @@ export default function Admin() {
                     <CardContent className="p-0 divide-y divide-slate-100 dark:divide-slate-800/60">
                       {pendingProfiles.map((p) => (
                         <div key={p.id} className="p-4 flex flex-wrap items-center gap-3" data-testid={`row-pending-profile-${p.id}`}>
-                          {p.role === "supplier" ? <Building2 className="h-5 w-5 text-blue-600" /> : <Store className="h-5 w-5 text-emerald-600" />}
+                          {p.role === "supplier" ? <Building2 className="h-5 w-5 text-zinc-800" /> : <Store className="h-5 w-5 text-emerald-600" />}
                           <div className="flex-1 min-w-[160px]">
                             <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{p.company_name}</div>
                             <div className="text-xs text-slate-400">
@@ -343,13 +343,13 @@ export default function Admin() {
                   <CardContent className="p-0 divide-y divide-slate-100 dark:divide-slate-800/60">
                     {(profiles ?? []).map((p) => (
                       <div key={p.id} className="p-4 flex flex-wrap items-center gap-3" data-testid={`row-profile-${p.id}`}>
-                        {p.role === "supplier" ? <Building2 className="h-4 w-4 text-blue-600" /> : <Store className="h-4 w-4 text-emerald-600" />}
+                        {p.role === "supplier" ? <Building2 className="h-4 w-4 text-zinc-800" /> : <Store className="h-4 w-4 text-emerald-600" />}
                         <div className="flex-1 min-w-[160px]">
                           <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{p.company_name}</div>
                           <div className="text-xs text-slate-400">{p.role === "supplier" ? "مورّد" : "صاحب منشأة"} · {p.email}</div>
                         </div>
                         {p.is_admin && (
-                          <span className="text-[11px] font-bold px-2.5 py-1 rounded-sm border bg-blue-100 text-blue-800 border-blue-200 inline-flex items-center gap-1">
+                          <span className="text-[11px] font-bold px-2.5 py-1 rounded-sm border bg-zinc-100 text-zinc-900 border-zinc-200 inline-flex items-center gap-1">
                             <ShieldCheck className="h-3 w-3" /> إدارة
                           </span>
                         )}
@@ -380,7 +380,7 @@ export default function Admin() {
                         {p.user_id !== user?.id && (
                           <Button
                             size="sm" variant="outline"
-                            className={`rounded-sm font-bold text-xs ${p.is_admin ? "text-amber-700 border-amber-200 hover:bg-amber-50" : "text-blue-700 border-blue-200 hover:bg-blue-50"}`}
+                            className={`rounded-sm font-bold text-xs ${p.is_admin ? "text-amber-700 border-amber-200 hover:bg-amber-50" : "text-zinc-800 border-zinc-200 hover:bg-zinc-50"}`}
                             disabled={setProfileStatus.isPending}
                             data-testid={`button-toggle-admin-${p.id}`}
                             onClick={() => setProfileStatus.mutate({ id: p.id, data: { is_admin: !p.is_admin } })}
@@ -402,7 +402,7 @@ export default function Admin() {
           <Card className="rounded-sm border-slate-200 shadow-sm">
             <CardHeader className="border-b border-slate-100 dark:border-slate-800 py-3.5">
               <CardTitle className="text-sm font-extrabold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                <Tags className="h-4 w-4 text-blue-600" /> أسعار الموردين المسجلة ({prices?.length ?? 0})
+                <Tags className="h-4 w-4 text-zinc-800" /> أسعار الموردين المسجلة ({prices?.length ?? 0})
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -431,7 +431,7 @@ export default function Admin() {
                           <td className="p-3 font-bold text-slate-800 dark:text-slate-100">{p.product_name}</td>
                           <td className="p-3 text-slate-500">{p.category}</td>
                           <td className="p-3 text-slate-500">{p.unit}</td>
-                          <td className="p-3 font-extrabold text-blue-700 dark:text-blue-400 whitespace-nowrap">{Number(p.price).toLocaleString("ar-SA")} ر.س</td>
+                          <td className="p-3 font-extrabold text-zinc-800 dark:text-zinc-400 whitespace-nowrap">{Number(p.price).toLocaleString("ar-SA")} ر.س</td>
                           <td className="p-3 text-slate-600 dark:text-slate-300">{p.supplier_company}</td>
                         </tr>
                       ))}
