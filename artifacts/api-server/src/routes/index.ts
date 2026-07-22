@@ -8,6 +8,7 @@ import pricesRouter from "./prices";
 import invoicesRouter from "./invoices";
 import adminRouter from "./admin";
 import accessRouter from "./access";
+import adminPosRouter from "./admin-pos";
 
 const router: IRouter = Router();
 
@@ -18,6 +19,7 @@ router.use("/partners", partnersRouter);
 router.use("/orders", ordersRouter);
 router.use("/prices", pricesRouter);
 router.use("/invoices", invoicesRouter);
+router.use("/admin/pos", adminPosRouter);
 router.use("/admin", adminRouter);
 router.use("/me", accessRouter);
 

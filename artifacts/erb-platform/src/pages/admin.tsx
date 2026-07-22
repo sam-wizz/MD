@@ -20,8 +20,9 @@ import {
   type Order,
 } from "@workspace/api-client-react";
 import { statusMeta, parseAiRecommendation, apiErrorMessage } from "@/lib/orders";
+import { PosIntegrationPanel } from "@/components/admin/pos-integration-panel";
 
-type Tab = "orders" | "accounts" | "prices";
+type Tab = "orders" | "accounts" | "prices" | "pos";
 
 /** لوحة إدارة المنصة: اعتماد الطلبات والحسابات، توصية الذكاء الاصطناعي، والإسناد للموردين. */
 export default function Admin() {
@@ -140,6 +141,7 @@ export default function Admin() {
           {tabBtn("orders", "الطلبات", <Package className="h-4 w-4" />, pendingOrdersCount)}
           {tabBtn("accounts", "الحسابات", <Users className="h-4 w-4" />, pendingProfiles.length)}
           {tabBtn("prices", "أسعار الموردين", <Tags className="h-4 w-4" />)}
+          {tabBtn("pos", "تكامل POS", <ShieldCheck className="h-4 w-4" />)}
         </div>
 
         {/* ====== الطلبات ====== */}
@@ -442,6 +444,9 @@ export default function Admin() {
             </CardContent>
           </Card>
         )}
+
+        {/* ====== تكامل POS ====== */}
+        {tab === "pos" && <PosIntegrationPanel />}
       </main>
     </div>
   );
