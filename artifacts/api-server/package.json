@@ -2,6 +2,7 @@
   "name": "@workspace/api-server",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@10.34.5",
   "type": "module",
   "scripts": {
     "dev": "pnpm run build && cross-env NODE_ENV=development node --enable-source-maps ./dist/index.mjs",
