@@ -2,17 +2,32 @@ import { MissingConsentError } from "../pos/errors";
 import type { PosAdapter, PosAdapterKind } from "../pos/types";
 import {
   computeReorderSuggestions,
+  type ActiveItemMapping,
   type ReorderComputationResult,
+  type ReorderComputedItem,
   type ReorderPolicyConfig,
+  type UnmappedExternalItem,
 } from "./reorder-formula";
-import {
-  POS_REQUIRED_SCOPES,
-  ReorderSuggestionRepository,
-  type AdapterAuditOperation,
-  type ConsentRecord,
-} from "./reorder-suggestion-repository";
 
 export type ReorderRunSource = "manual" | "scheduled";
+
+const POS_REQUIRED_SCOPES = [
+  "branches.read",
+  "stock.read",
+  "consumption.read",
+] as const;
+
+type PosScope = (typeof POS_REQUIRED_SCOPES)[number];
+
+type ConsentRecord = {
+  id: number;
+  scope: PosScope;
+};
+
+type AdapterAuditOperation =
+  | "listBranches"
+  | "getStockLevels"
+  | "getConsumptionHistory";
 
 const DEFAULT_POLICY: ReorderPolicyConfig = {
   lookbackDays: 7,
@@ -64,20 +79,65 @@ export type GenerateForClientResult =
       unmappedCount?: number;
     };
 
-type RepositoryLike = Pick<
-  ReorderSuggestionRepository,
-  | "getClientProfile"
-  | "listEligibleClientIds"
-  | "getActiveConsents"
-  | "getPolicy"
-  | "listActiveMappings"
-  | "listProducts"
-  | "upsertAutoMappingSuggestion"
-  | "createSuggestionDraft"
-  | "insertSuggestionItems"
-  | "insertUnmappedItems"
-  | "createAuditLog"
->;
+type RepositoryLike = {
+  getClientProfile(clientId: string): Promise<{
+    userId: string;
+    companyName: string;
+    fullName: string;
+    phone: string | null;
+  } | null>;
+  listEligibleClientIds(): Promise<string[]>;
+  getActiveConsents(
+    clientId: string,
+    scopes: readonly PosScope[],
+  ): Promise<ConsentRecord[]>;
+  getPolicy(clientId: string): Promise<{
+    lookbackDays: number;
+    leadTimeDays: number;
+    safetyStockRatio: number;
+    coverageDays: number;
+    roundingStep: number;
+    defaultBranchId: string | null;
+  } | null>;
+  listActiveMappings(clientId: string): Promise<ActiveItemMapping[]>;
+  listProducts(): Promise<
+    { id: number; name: string; category: string; salesUnit: string }[]
+  >;
+  upsertAutoMappingSuggestion(input: {
+    clientId: string;
+    externalItemId: string;
+    externalItemName: string;
+    productId: number;
+    confidence: number;
+  }): Promise<void>;
+  createSuggestionDraft(input: {
+    clientId: string;
+    branchId: string;
+    branchName: string;
+    runSource: "manual" | "scheduled";
+    missingMappingCount: number;
+  }): Promise<number>;
+  insertSuggestionItems(
+    suggestionId: number,
+    items: ReorderComputedItem[],
+  ): Promise<void>;
+  insertUnmappedItems(
+    suggestionId: number,
+    items: UnmappedExternalItem[],
+  ): Promise<void>;
+  createAuditLog(input: {
+    clientId: string;
+    consentId: number | null;
+    adapter: PosAdapterKind;
+    operation: AdapterAuditOperation;
+    scope: PosScope;
+    branchId?: string;
+    requestMeta?: Record<string, unknown>;
+    success: boolean;
+    errorMessage?: string;
+    durationMs: number;
+  }): Promise<void>;
+};
 
 export class ReorderSuggestionService {
   constructor(

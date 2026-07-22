@@ -177,8 +177,11 @@ router.post("/consents", async (req, res) => {
   const requestedScopes = Array.isArray(req.body?.scopes)
     ? req.body.scopes
     : POS_REQUIRED_SCOPES;
-  const scopes = requestedScopes.filter((scope): scope is string =>
-    integrationScopeEnum.enumValues.includes(scope as any),
+  const scopes = requestedScopes.filter(
+    (
+      scope: unknown,
+    ): scope is (typeof integrationScopeEnum.enumValues)[number] =>
+      integrationScopeEnum.enumValues.includes(scope as any),
   );
   if (!clientId || !scopes.length) {
     return res.status(400).json({ error: "client_id and valid scopes are required" });
@@ -217,8 +220,11 @@ router.post("/consents/revoke", async (req, res) => {
   const requestedScopes = Array.isArray(req.body?.scopes)
     ? req.body.scopes
     : POS_REQUIRED_SCOPES;
-  const scopes = requestedScopes.filter((scope): scope is string =>
-    integrationScopeEnum.enumValues.includes(scope as any),
+  const scopes = requestedScopes.filter(
+    (
+      scope: unknown,
+    ): scope is (typeof integrationScopeEnum.enumValues)[number] =>
+      integrationScopeEnum.enumValues.includes(scope as any),
   );
   if (!clientId || !scopes.length) {
     return res.status(400).json({ error: "client_id and valid scopes are required" });
