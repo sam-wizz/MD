@@ -1,10 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter @workspace/api-server run build",
-  "functions": {
-    "api/[...all].ts": {
-      "runtime": "@vercel/node@5.3.24"
-    }
-  }
+  "buildCommand": "cd ../.. && pnpm --filter @workspace/api-server run build"
 }
