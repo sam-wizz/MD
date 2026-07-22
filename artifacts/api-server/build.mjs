@@ -22,6 +22,9 @@ async function buildAll() {
     outdir: distDir,
     outExtension: { ".js": ".mjs" },
     logLevel: "info",
+    // Resolve bare imports from workspace packages even when dependencies
+    // are installed under this package directory (e.g. npm in subdir builds).
+    nodePaths: [path.resolve(artifactDir, "node_modules")],
     // Some packages may not be bundleable, so we externalize them, we can add more here as needed.
     // Some of the packages below may not be imported or installed, but we're adding them in case they are in the future.
     // Examples of unbundleable packages:
