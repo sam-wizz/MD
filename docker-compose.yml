@@ -1,0 +1,65 @@
+# مَـد على Hetzner — تطبيق Node خلف Nginx (+ Let's Encrypt عبر certbot)
+#
+# أول مرة:
+#   cp .env.example .env && nano .env
+#   docker compose up -d --build
+# ثم فعّل SSL (راجع HETZNER.md)
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+        VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:-}
+    image: madd-app:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      STATIC_DIR: /app/artifacts/erb-platform/dist/public
+      # خلف nginx مباشرة — hop واحد لـ rate limiting و X-Forwarded-*
+      TRUST_PROXY: "1"
+    expose:
+      - "8080"
+    networks:
+      - madd
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/api/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/madd.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/certbot/www:/var/www/certbot:ro
+      - ./deploy/certbot/conf:/etc/letsencrypt:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - madd
+
+  # إصدار/تجديد شهادات Let's Encrypt (شغّله عند الحاجة)
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./deploy/certbot/www:/var/www/certbot
+      - ./deploy/certbot/conf:/etc/letsencrypt
+    profiles:
+      - certbot
+
+networks:
+  madd:
+    driver: bridge

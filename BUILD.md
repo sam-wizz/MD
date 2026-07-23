@@ -20,7 +20,6 @@
 |---|---|
 | `artifacts/api-server` | خادم الـ API (Express + Drizzle) |
 | `artifacts/erb-platform` | الواجهة الأمامية (React + Vite + Tailwind) |
-| `artifacts/mockup-sandbox` | بيئة معاينة المكوّنات (غير مطلوبة للإنتاج) |
 | `lib/db` | مخطط قاعدة البيانات (Drizzle) |
 | `lib/api-spec` | مواصفة OpenAPI ومولّد الكود (Orval) |
 | `lib/api-zod`, `lib/api-client-react` | الكود المولّد من المواصفة |
@@ -49,7 +48,7 @@ export VITE_SUPABASE_URL="https://YOUR-PROJECT.supabase.co"
 export SUPABASE_ANON_KEY="your-anon-key"
 ```
 والخادم يحتاج وقت التشغيل: `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
-`ADMIN_EMAILS`, `ALLOWED_ORIGINS` (راجع `replit.md` للقائمة الكاملة).
+`ADMIN_EMAILS`, `ALLOWED_ORIGINS` (راجع `replit.md` و `.env.example`).
 
 ### ٤) البناء
 ```bash
@@ -75,6 +74,15 @@ pnpm run test        # اختبارات الخادم (vitest + supertest)
 pnpm --filter @workspace/api-server run dev   # تشغيل تطوير مع إعادة بناء
 pnpm --filter @workspace/erb-platform run dev # واجهة تطوير (proxy تلقائي للـ API)
 pnpm --filter @workspace/api-spec run codegen # إعادة توليد عميل الـ API بعد تعديل openapi.yaml
+```
+
+## النشر على Hetzner
+راجع **`HETZNER.md`** — Docker Compose + Nginx + Let's Encrypt.
+باختصار على السيرفر:
+```bash
+cp .env.example .env   # عبّئ القيم
+./deploy/deploy.sh
+./deploy/enable-ssl.sh # بعد ربط النطاق
 ```
 
 ## ملاحظات

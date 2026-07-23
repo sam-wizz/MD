@@ -4,7 +4,7 @@ _Last reviewed: 2026-07-20. Treat the code as ground truth; update this file whe
 
 ## Project Overview
 
-مَـد (Madd Supplies) is a B2B supply-chain platform connecting suppliers and business owners in Saudi Arabia. The stack is Node.js 24 / TypeScript / Express 5 for the API server, PostgreSQL + Drizzle ORM for the database, and a React + Vite frontend (`artifacts/erb-platform`). The app is deployed publicly on Replit autoscale (`https://MADD-Supplies.replit.app`). Authentication is Supabase: the frontend obtains a session token, and the API server verifies it on every request.
+مَـد (Madd Supplies) is a B2B supply-chain platform connecting suppliers and business owners in Saudi Arabia. The stack is Node.js 20+ / TypeScript / Express 5 for the API server, PostgreSQL + Drizzle ORM for the database, and a React + Vite frontend (`artifacts/erb-platform`). Production deploy target is Hetzner Cloud (Docker + Nginx); see `HETZNER.md`. Authentication is Supabase: the frontend obtains a session token, and the API server verifies it on every request.
 
 ## Current Security Posture (implemented)
 
@@ -14,7 +14,7 @@ _Last reviewed: 2026-07-20. Treat the code as ground truth; update this file whe
 - **Rate limiting** — 300 req/min global + 30 req/min for write methods, per client IP (`trust proxy` set to 1 hop).
 - **Input limits** — JSON body capped at 20 MB (needed for base64 invoice uploads; the invoice route additionally rejects payloads over ~14 MB of base64). List endpoints are capped with `LIMIT` clauses.
 - **SQL injection** — Drizzle ORM with parameterized queries throughout; no raw string interpolation into SQL.
-- **Secrets** — DB connection string, Supabase keys, and OpenAI-gateway keys come from environment variables; none are committed. The committed `.replit` contains only the public Supabase URL and the admin email address.
+- **Secrets** — DB connection string, Supabase keys, and OpenAI-gateway keys come from environment variables (`.env` on the server); none are committed. Use `.env.example` as a template.
 
 ## Assets
 

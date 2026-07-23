@@ -10,9 +10,14 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
-// Behind the Replit proxy: trust one hop so req.ip reflects the client,
-// not the proxy, for accurate per-client rate limiting.
-app.set("trust proxy", 1);
+// Behind nginx / Replit / Railway: trust one hop so req.ip reflects the
+// client, not the proxy, for accurate per-client rate limiting.
+// Override with TRUST_PROXY (number of hops or "true") on multi-proxy setups.
+const trustProxy = process.env.TRUST_PROXY ?? "1";
+app.set(
+  "trust proxy",
+  trustProxy === "true" ? true : Number.isFinite(Number(trustProxy)) ? Number(trustProxy) : 1,
+);
 
 // CORS allowlist: only the app's own domains. The frontend is served from
 // the same origin via path-based routing, so cross-origin access is not

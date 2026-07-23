@@ -4,7 +4,7 @@ B2B supply-chain platform for Saudi Arabia: verified suppliers (موردين) co
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — build + run the API server (defaults to port 5000 locally; Replit injects `PORT` in production)
+- `pnpm --filter @workspace/api-server run dev` — build + run the API server (defaults to port 5000 locally; set `PORT` in production)
 - `pnpm --filter @workspace/erb-platform run dev` — run the frontend dev server (defaults to port 3000, proxies `/api` to `localhost:5000`; override the target with `API_PORT`)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
@@ -29,9 +29,11 @@ B2B supply-chain platform for Saudi Arabia: verified suppliers (موردين) co
 The API server serves the built frontend automatically when `artifacts/erb-platform/dist/public` exists (override the location with `STATIC_DIR`), so the whole site can run as **one Node service**:
 
 1. `pnpm install && pnpm run build` (frontend needs `SUPABASE_ANON_KEY`, and `VITE_SUPABASE_URL` in the environment at build time; optional `VITE_GOOGLE_MAPS_API_KEY`)
-2. Set runtime env: `DATABASE_URL`, `PORT`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ADMIN_EMAILS` (bootstrap admin), `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`, optional `AI_MODEL`, and `ALLOWED_ORIGINS` if the frontend is served from a different domain
+2. Set runtime env: `DATABASE_URL`, `PORT`, `HOST` (defaults to `0.0.0.0`), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ADMIN_EMAILS` (bootstrap admin), `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`, optional `AI_MODEL`, and `ALLOWED_ORIGINS` if the frontend is served from a different domain
 3. `pnpm --filter @workspace/db run push` — applies schema (includes the `is_admin` column) to the target Postgres
 4. Start: `pnpm --filter @workspace/api-server run start` (build step already produced `dist/index.mjs`)
+
+**Hetzner Cloud:** use `Dockerfile` + `docker-compose.yml` (Nginx reverse proxy + optional Let's Encrypt). See `HETZNER.md`. Prefer CX/CPX (x86_64); CAX ARM is not supported with current native binary overrides.
 
 **Google OAuth (must be configured in the Supabase dashboard, once):**
 - Auth → Providers → Google: enable, paste the Client ID/Secret from Google Cloud Console (OAuth consent screen + Web credentials; authorized redirect URI is `https://<project-ref>.supabase.co/auth/v1/callback`)
@@ -43,7 +45,6 @@ The API server serves the built frontend automatically when `artifacts/erb-platf
 
 - `artifacts/api-server` — Express API (`src/routes/*` per feature, `src/middlewares/auth.ts` for requireAuth/requireAdmin)
 - `artifacts/erb-platform` — the web app (`src/pages/*` per route, `src/components/dashboard/*` feature cards)
-- `artifacts/mockup-sandbox` — design-preview sandbox, not production
 - `lib/db/src/schema` — **source of truth for the DB schema**
 - `lib/api-spec/openapi.yaml` — **source of truth for the API contract** (Orval generates `lib/api-zod` + `lib/api-client-react`)
 - `threat_model.md` — security posture and watch list
@@ -51,7 +52,7 @@ The API server serves the built frontend automatically when `artifacts/erb-platf
 ## Architecture decisions
 
 - Identity always comes from the verified Supabase token server-side; request bodies never carry `user_id`. Verified tokens are cached in-memory for 60s to avoid a Supabase round-trip per request.
-- The frontend calls same-origin `/api/*`; Replit's deployment router maps it to the API server, and the Vite dev proxy covers local dev.
+- The frontend calls same-origin `/api/*`; in production the API serves the SPA, and the Vite dev proxy covers local dev.
 - The OpenAI client is lazy-initialized so the API can boot without the AI integration provisioned.
 - `orders` is the primary workflow (pending → approved → assigned → preparing → in_transit → delivered, with optimistic-concurrency status updates). The older `supply_requests` API was removed (superseded by orders); its DB table remains untouched, drop it when convenient.
 - Theme: class-based dark mode via next-themes (toggle in the nav, defaults to the OS preference). Signed-in pages are code-split with `React.lazy`.
