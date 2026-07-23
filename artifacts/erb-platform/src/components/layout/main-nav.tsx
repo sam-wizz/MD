@@ -1,10 +1,17 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useTheme } from "next-themes";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, ChevronLeft, ShieldCheck, Sun, Moon } from "lucide-react";
-import { useGetMyAccess, getGetMyAccessQueryKey } from "@workspace/api-client-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { LogOut, LayoutDashboard, ChevronLeft, ShieldCheck, Sun, Moon, Bell } from "lucide-react";
+import {
+  useGetMyAccess, getGetMyAccessQueryKey,
+  useListNotifications, getListNotificationsQueryKey,
+  useGetUnreadNotificationCount, getGetUnreadNotificationCountQueryKey,
+  type Notification,
+} from "@workspace/api-client-react";
 
 export function MaddMark({ className }: { className?: string }) {
   return (
@@ -19,18 +26,53 @@ export function MaddMark({ className }: { className?: string }) {
   );
 }
 
+async function markNotificationRead(id: number): Promise<Notification> {
+  const res = await fetch(`/api/notifications/${id}/read`, { method: "POST", credentials: "include" });
+  if (!res.ok) throw new Error("تعذر تحديث الإشعار");
+  return res.json() as Promise<Notification>;
+}
+
 export function MainNav() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { resolvedTheme, setTheme } = useTheme();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const { data: access } = useGetMyAccess({
     query: { enabled: !!user, queryKey: getGetMyAccessQueryKey() },
   });
 
+  const { data: notifications } = useListNotifications({
+    query: { enabled: !!user, queryKey: getListNotificationsQueryKey() },
+  });
+
+  const { data: unreadData } = useGetUnreadNotificationCount({
+    query: { enabled: !!user, queryKey: getGetUnreadNotificationCountQueryKey(), refetchInterval: 30_000 },
+  });
+
+  const markRead = useMutation({
+    mutationFn: markNotificationRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getListNotificationsQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getGetUnreadNotificationCountQueryKey() });
+    },
+  });
+
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     setLocation("/");
   };
+
+  const handleNotificationClick = (n: Notification) => {
+    if (n.id && !n.read) markRead.mutate(n.id);
+    if (n.order_id) {
+      setNotifOpen(false);
+      setLocation(`/orders/${n.order_id}`);
+    }
+  };
+
+  const unreadCount = unreadData?.count ?? 0;
 
   return (
     <nav className="border-b border-white/5 bg-slate-950/70 backdrop-blur-xl sticky top-0 z-50 transition-all duration-500">
@@ -55,6 +97,55 @@ export function MainNav() {
           </button>
           {user ? (
             <>
+              {/* Extension point: email/SMS push notifications via external notifier hook */}
+              <Popover open={notifOpen} onOpenChange={setNotifOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="الإشعارات"
+                    data-testid="button-notifications"
+                    className="relative inline-flex items-center justify-center rounded-sm h-10 w-10 text-slate-300 hover:text-white hover:bg-white/10 border border-white/10 transition-colors duration-300"
+                  >
+                    <Bell className="h-4 w-4" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -left-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-rose-500 text-white text-[10px] font-extrabold">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-80 p-0 rounded-sm" dir="rtl">
+                  <div className="border-b border-slate-100 dark:border-slate-800 px-4 py-3">
+                    <span className="text-xs font-extrabold text-slate-700 dark:text-slate-200">الإشعارات</span>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {!notifications?.length ? (
+                      <p className="text-xs text-slate-400 text-center py-8 font-bold">لا توجد إشعارات</p>
+                    ) : (
+                      notifications.map((n) => (
+                        <button
+                          key={n.id}
+                          type="button"
+                          onClick={() => handleNotificationClick(n)}
+                          className={`w-full text-right px-4 py-3 border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors ${
+                            !n.read ? "bg-indigo-50/50 dark:bg-indigo-950/20" : ""
+                          }`}
+                          data-testid={`notification-${n.id}`}
+                        >
+                          <div className="text-xs font-extrabold text-slate-800 dark:text-slate-100">{n.title}</div>
+                          {n.body && <div className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{n.body}</div>}
+                          {n.created_at && (
+                            <div className="text-[10px] text-slate-400 mt-1">
+                              {new Date(n.created_at).toLocaleString("ar-SA")}
+                            </div>
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
               {access?.is_admin && (
                 <Link href="/admin" data-testid="link-admin" className="inline-flex items-center justify-center gap-2 rounded-sm h-10 px-4 text-zinc-300 hover:text-white hover:bg-zinc-600/20 transition-colors duration-300 font-semibold border border-zinc-500/20">
                   <ShieldCheck className="h-4 w-4" />

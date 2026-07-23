@@ -26,7 +26,7 @@ export default function Onboarding() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      setLocation("/auth");
+      setLocation(`/auth?redirect=${encodeURIComponent("/onboarding")}`);
     }
   }, [authLoading, user, setLocation]);
 

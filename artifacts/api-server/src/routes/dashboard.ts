@@ -56,12 +56,15 @@ function orderActivity(order: Order, viewerId: string) {
   const byStatus: Record<Order["status"], { type: string; message: string }> = {
     pending: { type: "connection", message: `طلب توريد جديد (${category}) — ${order.delivery_region}` },
     approved: { type: "approval", message: `تمت الموافقة على طلب ${category} وبانتظار إسناده لمورد` },
+    offered: { type: "connection", message: `عُرض طلب ${category} على مرشح وينتظر القبول` },
     assigned: { type: "connection", message: `تم إسناد طلب ${category} إلى ${order.assigned_supplier_company ?? "مورد"}` },
     preparing: { type: "update", message: `جاري تجهيز طلب ${category}` },
+    ready_for_pickup: { type: "update", message: `طلب ${category} جاهز للاستلام من جهة النقل` },
     in_transit: { type: "update", message: `طلب ${category} في الطريق إلى ${order.delivery_region}` },
     delivered: { type: "milestone", message: `تم تسليم طلب ${category} بنجاح` },
     rejected: { type: "update", message: `تم رفض طلب ${category}` },
     cancelled: { type: "update", message: `تم إلغاء طلب ${category}` },
+    needs_manual: { type: "update", message: `طلب ${category} يحتاج تدخلاً يدوياً من الإدارة` },
   };
   const { type, message } = byStatus[order.status];
   return {

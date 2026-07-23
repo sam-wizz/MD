@@ -64,21 +64,29 @@ describe("auth gate", () => {
   });
 });
 
+describe("security headers", () => {
+  it("sets helmet headers on responses", async () => {
+    const res = await request(app).get("/api/healthz");
+    expect(res.headers["x-content-type-options"]).toBe("nosniff");
+  });
+});
+
 describe("input validation", () => {
   it("POST /api/profiles rejects missing required fields", async () => {
     const res = await request(app)
       .post("/api/profiles")
       .set("Authorization", "Bearer valid-token")
-      .send({ email: "user@example.com" });
+      .send({});
     expect(res.status).toBe(400);
   });
 
-  it("POST /api/profiles rejects an unknown role", async () => {
+  it("POST /api/profiles ignores client email/user_id (still validates role)", async () => {
     const res = await request(app)
       .post("/api/profiles")
       .set("Authorization", "Bearer valid-token")
       .send({
-        email: "user@example.com",
+        user_id: "attacker",
+        email: "spoof@evil.com",
         full_name: "Test User",
         company_name: "Test Co",
         role: "superuser",
@@ -91,6 +99,14 @@ describe("input validation", () => {
       .post("/api/orders")
       .set("Authorization", "Bearer valid-token")
       .send({ items: "٥ كراتين أرز" });
+    expect(res.status).toBe(400);
+  });
+
+  it("PATCH /api/orders/:id/status rejects invalid status", async () => {
+    const res = await request(app)
+      .patch("/api/orders/1/status")
+      .set("Authorization", "Bearer valid-token")
+      .send({ status: "approved" });
     expect(res.status).toBe(400);
   });
 });

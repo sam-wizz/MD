@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, invoiceAnalysesTable, supplierPricesTable, profilesTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
+import { z } from "zod/v4";
 import { requireAuth } from "../middlewares/auth";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { AI_MODEL } from "../lib/ai";
@@ -10,6 +11,14 @@ const router = Router();
 const serialize = (r: typeof invoiceAnalysesTable.$inferSelect) => ({
   ...r,
   created_at: r.created_at.toISOString(),
+});
+
+const analyzeBodySchema = z.object({
+  file_base64: z.string().min(1, "ملف الفاتورة مطلوب").max(14_000_000, "حجم الملف كبير جداً"),
+  mime_type: z
+    .string()
+    .regex(/^image\/(png|jpe?g|webp)$/i, "صيغة غير مدعومة — ارفع صورة الفاتورة (JPG أو PNG)"),
+  file_name: z.string().trim().max(255).optional().nullable(),
 });
 
 /** يلتقط أول JSON صالح من رد النموذج (مع أو بدون أسوار كود). */
@@ -23,16 +32,13 @@ function extractJson(text: string): any {
 
 // POST /api/invoices/analyze — رفع صورة فاتورة سابقة وتحليلها ومقارنتها بأسعار المنصة
 router.post("/analyze", requireAuth, async (req, res) => {
-  const { file_base64, mime_type, file_name } = req.body ?? {};
-  if (!file_base64 || !mime_type) {
-    return res.status(400).json({ error: "ملف الفاتورة مطلوب" });
+  const parsed = analyzeBodySchema.safeParse(req.body ?? {});
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message ?? "بيانات غير صالحة";
+    const status = msg.includes("كبير") ? 413 : 400;
+    return res.status(status).json({ error: msg });
   }
-  if (typeof file_base64 !== "string" || file_base64.length > 14_000_000) {
-    return res.status(413).json({ error: "حجم الملف كبير جداً — الحد الأقصى ١٠ ميجابايت" });
-  }
-  if (!/^image\/(png|jpe?g|webp)$/i.test(mime_type)) {
-    return res.status(400).json({ error: "صيغة غير مدعومة — ارفع صورة الفاتورة (JPG أو PNG)" });
-  }
+  const { file_base64, mime_type, file_name } = parsed.data;
 
   try {
     const profiles = await db.select().from(profilesTable).where(eq(profilesTable.user_id, req.userId!)).limit(1);

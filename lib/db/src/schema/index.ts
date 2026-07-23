@@ -3,3 +3,8 @@ export * from "./requests";
 export * from "./orders";
 export * from "./prices";
 export * from "./invoices";
+export * from "./order-offers";
+export * from "./order-status-history";
+export * from "./logistics-capabilities";
+export * from "./automation-settings";
+export * from "./notifications";

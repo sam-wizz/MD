@@ -1,20 +1,31 @@
-import { createClient } from '@supabase/supabase-js';
-import { setAuthTokenGetter } from '@workspace/api-client-react';
+import { createClient } from "@supabase/supabase-js";
+import { setAuthTokenGetter } from "@workspace/api-client-react";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'http://localhost';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'anon';
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "").trim();
+const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY || "").trim();
 
-if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-  // Auth cannot work without these — surface loudly instead of failing silently.
+export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+if (!isSupabaseConfigured) {
   console.error(
-    'Supabase is not configured: set VITE_SUPABASE_URL and SUPABASE_ANON_KEY at build time. Login will not work.',
+    "[مَد] Supabase غير مضبوط: عيّن VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY (أو SUPABASE_ANON_KEY وقت البناء). لن يعمل تسجيل الدخول.",
   );
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/** عميل المصادقة — حتى مع إعداد ناقص ننشئ عميلاً حتى لا تنهار الواجهة */
+export const supabase = createClient(
+  SUPABASE_URL || "https://example.supabase.co",
+  SUPABASE_ANON_KEY || "public-anon-key",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  },
+);
 
-// Attach the Supabase access token to every API request so the server can
-// verify the caller's identity.
+// إرفاق توكن الجلسة بكل طلبات API
 setAuthTokenGetter(async () => {
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token ?? null;

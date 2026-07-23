@@ -19,6 +19,7 @@ export type UserProfileRole = typeof UserProfileRole[keyof typeof UserProfileRol
 export const UserProfileRole = {
   supplier: 'supplier',
   business_owner: 'business_owner',
+  logistics: 'logistics',
 } as const;
 
 export type UserProfileStatus = typeof UserProfileStatus[keyof typeof UserProfileStatus];
@@ -45,6 +46,10 @@ export interface UserProfile {
   industry?: string | null;
   /** @nullable */
   country?: string | null;
+  /** @nullable */
+  region?: string | null;
+  /** @nullable */
+  rejection_reason?: string | null;
   is_admin?: boolean;
   status: UserProfileStatus;
   created_at: string;
@@ -56,6 +61,7 @@ export type ProfileInputRole = typeof ProfileInputRole[keyof typeof ProfileInput
 export const ProfileInputRole = {
   supplier: 'supplier',
   business_owner: 'business_owner',
+  logistics: 'logistics',
 } as const;
 
 export interface ProfileInput {
@@ -67,6 +73,7 @@ export interface ProfileInput {
   phone?: string;
   industry?: string;
   country?: string;
+  region?: string;
 }
 
 export interface DashboardOverview {
@@ -130,12 +137,15 @@ export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
 export const OrderStatus = {
   pending: 'pending',
   approved: 'approved',
+  offered: 'offered',
   assigned: 'assigned',
   preparing: 'preparing',
+  ready_for_pickup: 'ready_for_pickup',
   in_transit: 'in_transit',
   delivered: 'delivered',
   rejected: 'rejected',
   cancelled: 'cancelled',
+  needs_manual: 'needs_manual',
 } as const;
 
 export interface Order {
@@ -160,20 +170,41 @@ export interface Order {
   /** @nullable */
   assigned_supplier_region?: string | null;
   /** @nullable */
+  delivery_mode?: string | null;
+  /** @nullable */
+  assigned_logistics_id?: string | null;
+  /** @nullable */
+  assigned_logistics_company?: string | null;
+  /** @nullable */
+  offered_to_id?: string | null;
+  /** @nullable */
+  offer_expires_at?: string | null;
+  /** @nullable */
+  automation_score?: string | null;
+  /** @nullable */
+  picked_up_at?: string | null;
+  /** @nullable */
+  eta?: string | null;
+  /** @nullable */
   admin_notes?: string | null;
   /** @nullable */
   ai_recommendation?: string | null;
+  /** @nullable */
+  automation_reason?: string | null;
   created_at: string;
   updated_at: string;
 }
 
+/**
+ * Client must not send business_id, business_company, business_contact, or business_phone — those are filled from the authenticated profile.
+ */
 export interface OrderCreateInput {
   product_category: string;
+  /** @minLength 10 */
   items: string;
   delivery_region: string;
   delivery_address?: string;
   notes?: string;
-  business_phone?: string;
 }
 
 export type OrderStatusUpdateInputStatus = typeof OrderStatusUpdateInputStatus[keyof typeof OrderStatusUpdateInputStatus];
@@ -181,6 +212,7 @@ export type OrderStatusUpdateInputStatus = typeof OrderStatusUpdateInputStatus[k
 
 export const OrderStatusUpdateInputStatus = {
   preparing: 'preparing',
+  ready_for_pickup: 'ready_for_pickup',
   in_transit: 'in_transit',
   delivered: 'delivered',
   cancelled: 'cancelled',
@@ -190,6 +222,78 @@ export interface OrderStatusUpdateInput {
   status: OrderStatusUpdateInputStatus;
 }
 
+export type OrderStatusHistoryActorKind = typeof OrderStatusHistoryActorKind[keyof typeof OrderStatusHistoryActorKind];
+
+
+export const OrderStatusHistoryActorKind = {
+  user: 'user',
+  system: 'system',
+} as const;
+
+export interface OrderStatusHistory {
+  id?: number;
+  order_id?: number;
+  /** @nullable */
+  from_status?: string | null;
+  to_status?: string;
+  /** @nullable */
+  actor_id?: string | null;
+  /** @nullable */
+  actor_role?: string | null;
+  actor_kind?: OrderStatusHistoryActorKind;
+  /** @nullable */
+  note?: string | null;
+  created_at?: string;
+}
+
+export type OrderOfferCandidateRole = typeof OrderOfferCandidateRole[keyof typeof OrderOfferCandidateRole];
+
+
+export const OrderOfferCandidateRole = {
+  supplier: 'supplier',
+  logistics: 'logistics',
+} as const;
+
+export type OrderOfferScoreBreakdown = {[key: string]: number};
+
+export interface OrderOffer {
+  id?: number;
+  order_id?: number;
+  candidate_id?: string;
+  candidate_role?: OrderOfferCandidateRole;
+  rank?: number;
+  /** @nullable */
+  score?: string | null;
+  score_breakdown?: OrderOfferScoreBreakdown;
+  offered_at?: string;
+  expires_at?: string;
+  /** @nullable */
+  responded_at?: string | null;
+  /** @nullable */
+  response?: string | null;
+  /** @nullable */
+  reason?: string | null;
+  created_at?: string;
+}
+
+export interface DeliveryOptions {
+  supplier_delivery: boolean;
+  logistics: boolean;
+  role?: string;
+}
+
+export interface Notification {
+  id?: number;
+  user_id?: string;
+  type?: string;
+  title?: string;
+  body?: string;
+  /** @nullable */
+  order_id?: number | null;
+  read?: boolean;
+  created_at?: string;
+}
+
 export type AdminOrderActionInputAction = typeof AdminOrderActionInputAction[keyof typeof AdminOrderActionInputAction];
 
 
@@ -197,12 +301,39 @@ export const AdminOrderActionInputAction = {
   approve: 'approve',
   reject: 'reject',
   assign: 'assign',
+  force_assign: 'force_assign',
+  resolve: 'resolve',
+  set_delivery_mode: 'set_delivery_mode',
+  run_automation: 'run_automation',
+} as const;
+
+export type AdminOrderActionInputDeliveryMode = typeof AdminOrderActionInputDeliveryMode[keyof typeof AdminOrderActionInputDeliveryMode];
+
+
+export const AdminOrderActionInputDeliveryMode = {
+  supplier_delivery: 'supplier_delivery',
+  logistics: 'logistics',
+} as const;
+
+export type AdminOrderActionInputTargetStatus = typeof AdminOrderActionInputTargetStatus[keyof typeof AdminOrderActionInputTargetStatus];
+
+
+export const AdminOrderActionInputTargetStatus = {
+  approved: 'approved',
+  offered: 'offered',
+  assigned: 'assigned',
+  rejected: 'rejected',
+  cancelled: 'cancelled',
 } as const;
 
 export interface AdminOrderActionInput {
   action: AdminOrderActionInputAction;
   supplier_id?: string;
+  logistics_id?: string;
+  delivery_mode?: AdminOrderActionInputDeliveryMode;
   admin_notes?: string;
+  reason?: string;
+  target_status?: AdminOrderActionInputTargetStatus;
 }
 
 export type ProfileStatusUpdateInputStatus = typeof ProfileStatusUpdateInputStatus[keyof typeof ProfileStatusUpdateInputStatus];
@@ -219,6 +350,8 @@ export const ProfileStatusUpdateInputStatus = {
 export interface ProfileStatusUpdateInput {
   status?: ProfileStatusUpdateInputStatus;
   is_admin?: boolean;
+  /** Reason shown to the user when status is rejected */
+  rejection_reason?: string;
 }
 
 export interface SupplierPrice {
@@ -263,9 +396,56 @@ export interface InvoiceAnalysis {
   created_at: string;
 }
 
+export type LoginWithPasswordBody = {
+  email: string;
+  password: string;
+};
+
+export type LoginWithPassword200User = { [key: string]: unknown };
+
+export type LoginWithPassword200 = {
+  access_token: string;
+  refresh_token: string;
+  expires_in?: number;
+  token_type?: string;
+  user?: LoginWithPassword200User;
+};
+
+export type AcceptOrderOfferBodyDeliveryMode = typeof AcceptOrderOfferBodyDeliveryMode[keyof typeof AcceptOrderOfferBodyDeliveryMode];
+
+
+export const AcceptOrderOfferBodyDeliveryMode = {
+  supplier_delivery: 'supplier_delivery',
+  logistics: 'logistics',
+} as const;
+
+export type AcceptOrderOfferBody = {
+  delivery_mode?: AcceptOrderOfferBodyDeliveryMode;
+};
+
+export type RejectOrderOfferBody = {
+  reason?: string;
+};
+
+export type RejectOrderOffer200 = {
+  ok?: boolean;
+};
+
+export type GetUnreadNotificationCount200 = {
+  count: number;
+};
+
 export type AdminGetOrdersParams = {
 status?: string;
 };
+
+export type AdminGetAutomationHealth200 = { [key: string]: unknown };
+
+export type AdminGetAutomationSettings200 = { [key: string]: unknown };
+
+export type AdminUpdateAutomationSettingsBody = { [key: string]: unknown };
+
+export type AdminUpdateAutomationSettings200 = { [key: string]: unknown };
 
 export type AdminGetProfilesParams = {
 status?: string;

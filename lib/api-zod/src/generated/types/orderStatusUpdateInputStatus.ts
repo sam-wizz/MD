@@ -11,6 +11,7 @@ export type OrderStatusUpdateInputStatus = typeof OrderStatusUpdateInputStatus[k
 
 export const OrderStatusUpdateInputStatus = {
   preparing: 'preparing',
+  ready_for_pickup: 'ready_for_pickup',
   in_transit: 'in_transit',
   delivered: 'delivered',
   cancelled: 'cancelled',

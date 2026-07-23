@@ -12,4 +12,5 @@ export type UserProfileRole = typeof UserProfileRole[keyof typeof UserProfileRol
 export const UserProfileRole = {
   supplier: 'supplier',
   business_owner: 'business_owner',
+  logistics: 'logistics',
 } as const;

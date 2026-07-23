@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, supplierPricesTable, profilesTable } from "@workspace/db";
 import { eq, desc, and } from "drizzle-orm";
+import { z } from "zod/v4";
 import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
@@ -11,10 +12,18 @@ const serialize = (p: typeof supplierPricesTable.$inferSelect) => ({
   updated_at: p.updated_at.toISOString(),
 });
 
-// GET /api/prices/mine — قائمة أسعار المورد الحالي
+const priceBodySchema = z.object({
+  product_name: z.string().trim().min(1, "اسم المنتج مطلوب"),
+  category: z.string().trim().min(1, "التصنيف مطلوب"),
+  unit: z.string().trim().min(1, "الوحدة مطلوبة"),
+  price: z.coerce.number().positive("السعر يجب أن يكون رقماً موجباً"),
+});
+
 router.get("/mine", requireAuth, async (req, res) => {
   try {
-    const rows = await db.select().from(supplierPricesTable)
+    const rows = await db
+      .select()
+      .from(supplierPricesTable)
       .where(eq(supplierPricesTable.supplier_id, req.userId!))
       .orderBy(desc(supplierPricesTable.created_at));
     return res.json(rows.map(serialize));
@@ -24,33 +33,38 @@ router.get("/mine", requireAuth, async (req, res) => {
   }
 });
 
-// POST /api/prices — المورد يضيف سعر منتج
 router.post("/", requireAuth, async (req, res) => {
-  const { product_name, category, unit, price } = req.body ?? {};
-  if (!product_name || !category || !unit || price === undefined || price === null || price === "") {
-    return res.status(400).json({ error: "جميع الحقول مطلوبة" });
+  const parsed = priceBodySchema.safeParse(req.body ?? {});
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: parsed.error.issues[0]?.message ?? "بيانات غير صالحة",
+    });
   }
-  const priceNum = Number(price);
-  if (!Number.isFinite(priceNum) || priceNum <= 0) {
-    return res.status(400).json({ error: "السعر يجب أن يكون رقماً موجباً" });
-  }
+  const { product_name, category, unit, price } = parsed.data;
 
   try {
-    const profiles = await db.select().from(profilesTable).where(eq(profilesTable.user_id, req.userId!)).limit(1);
+    const profiles = await db
+      .select()
+      .from(profilesTable)
+      .where(eq(profilesTable.user_id, req.userId!))
+      .limit(1);
     const profile = profiles[0];
     if (!profile) return res.status(404).json({ error: "أكمل ملفك الشخصي أولاً" });
     if (profile.role !== "supplier") {
       return res.status(403).json({ error: "قائمة الأسعار متاحة للموردين فقط" });
     }
 
-    const inserted = await db.insert(supplierPricesTable).values({
-      supplier_id: req.userId!,
-      supplier_company: profile.company_name,
-      product_name,
-      category,
-      unit,
-      price: priceNum.toFixed(2),
-    }).returning();
+    const inserted = await db
+      .insert(supplierPricesTable)
+      .values({
+        supplier_id: req.userId!,
+        supplier_company: profile.company_name,
+        product_name,
+        category,
+        unit,
+        price: price.toFixed(2),
+      })
+      .returning();
 
     return res.status(201).json(serialize(inserted[0]));
   } catch (err) {
@@ -59,14 +73,19 @@ router.post("/", requireAuth, async (req, res) => {
   }
 });
 
-// DELETE /api/prices/:id — المورد يحذف سعراً من قائمته فقط
 router.delete("/:id", requireAuth, async (req, res) => {
   const id = Number.parseInt(String(req.params.id), 10);
   if (!Number.isFinite(id)) return res.status(400).json({ error: "معرّف غير صالح" });
 
   try {
-    const deleted = await db.delete(supplierPricesTable)
-      .where(and(eq(supplierPricesTable.id, id), eq(supplierPricesTable.supplier_id, req.userId!)))
+    const deleted = await db
+      .delete(supplierPricesTable)
+      .where(
+        and(
+          eq(supplierPricesTable.id, id),
+          eq(supplierPricesTable.supplier_id, req.userId!),
+        ),
+      )
       .returning();
     if (!deleted.length) return res.status(404).json({ error: "السعر غير موجود" });
     return res.status(204).end();

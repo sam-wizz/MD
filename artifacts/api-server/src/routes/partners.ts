@@ -30,9 +30,8 @@ router.get("/", requireAuth, async (req, res) => {
         full_name: profilesTable.full_name,
         role: profilesTable.role,
         business_type: profilesTable.business_type,
-        phone: profilesTable.phone,
-        email: profilesTable.email,
         country: profilesTable.country,
+        region: profilesTable.region,
         created_at: profilesTable.created_at,
       })
       .from(profilesTable)

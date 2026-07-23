@@ -23,6 +23,10 @@ export interface UserProfile {
   industry?: string | null;
   /** @nullable */
   country?: string | null;
+  /** @nullable */
+  region?: string | null;
+  /** @nullable */
+  rejection_reason?: string | null;
   is_admin?: boolean;
   status: UserProfileStatus;
   created_at: string;

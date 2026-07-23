@@ -1,5 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { startAutomationScheduler } from "./automation";
 
 // Replit/Railway inject PORT; Hetzner Docker defaults to 8080 via compose.
 // HOST=0.0.0.0 is required inside containers / behind nginx.
@@ -14,6 +15,7 @@ if (Number.isNaN(port) || port <= 0) {
 
 const server = app.listen(port, host, () => {
   logger.info({ port, host }, "Server listening");
+  startAutomationScheduler(60_000);
 });
 
 server.on("error", (err) => {

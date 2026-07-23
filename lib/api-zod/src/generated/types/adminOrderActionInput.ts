@@ -6,9 +6,15 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdminOrderActionInputAction } from './adminOrderActionInputAction';
+import type { AdminOrderActionInputDeliveryMode } from './adminOrderActionInputDeliveryMode';
+import type { AdminOrderActionInputTargetStatus } from './adminOrderActionInputTargetStatus';
 
 export interface AdminOrderActionInput {
   action: AdminOrderActionInputAction;
   supplier_id?: string;
+  logistics_id?: string;
+  delivery_mode?: AdminOrderActionInputDeliveryMode;
   admin_notes?: string;
+  reason?: string;
+  target_status?: AdminOrderActionInputTargetStatus;
 }

@@ -26,6 +26,8 @@ tags:
     description: Caller access flags
   - name: admin
     description: Admin operations
+  - name: auth
+    description: Authentication helpers
 paths:
   /healthz:
     get:
@@ -39,6 +41,57 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: loginWithPassword
+      tags: [auth]
+      summary: Sign in with email/password (server-side rate limited)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Supabase session tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [access_token, refresh_token]
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  expires_in:
+                    type: integer
+                  token_type:
+                    type: string
+                  user:
+                    type: object
+                    additionalProperties: true
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Too many failed attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /profiles/me:
     get:
@@ -265,7 +318,7 @@ paths:
     patch:
       operationId: updateOrderStatus
       tags: [orders]
-      summary: Update delivery status (assigned supplier or admin)
+      summary: Update delivery status (assigned supplier/carrier, owner cancel, or admin)
       security:
         - bearerAuth: []
       parameters:
@@ -287,6 +340,171 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Order"
+
+  /orders/{id}/history:
+    get:
+      operationId: getOrderHistory
+      tags: [orders]
+      summary: Status history timeline for an order
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: History entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderStatusHistory"
+
+  /orders/{id}/offers:
+    get:
+      operationId: getOrderOffers
+      tags: [orders]
+      summary: Offer chain for an order (admin sees all; candidate sees own)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Offers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderOffer"
+
+  /orders/{id}/delivery-options:
+    get:
+      operationId: getOrderDeliveryOptions
+      tags: [orders]
+      summary: Delivery mode options for the current offer candidate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Options
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryOptions"
+
+  /orders/{id}/offers/accept:
+    post:
+      operationId: acceptOrderOffer
+      tags: [orders]
+      summary: Accept an offer (supplier chooses delivery_mode)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                delivery_mode:
+                  type: string
+                  enum: [supplier_delivery, logistics]
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/offers/reject:
+    post:
+      operationId: rejectOrderOffer
+      tags: [orders]
+      summary: Reject current offer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: In-app notifications for the caller
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/unread-count:
+    get:
+      operationId: getUnreadNotificationCount
+      tags: [notifications]
+      summary: Unread notification count
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                required: [count]
 
   /prices/mine:
     get:
@@ -404,11 +622,103 @@ paths:
                 items:
                   $ref: "#/components/schemas/Order"
 
+  /admin/orders/needs-attention:
+    get:
+      operationId: adminGetNeedsAttention
+      tags: [admin]
+      summary: Orders in needs_manual queue
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Orders needing attention
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /admin/automation/health:
+    get:
+      operationId: adminGetAutomationHealth
+      tags: [admin]
+      summary: Automation health strip for today
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Health stats
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /admin/automation/settings:
+    get:
+      operationId: adminGetAutomationSettings
+      tags: [admin]
+      summary: Get automation settings
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    patch:
+      operationId: adminUpdateAutomationSettings
+      tags: [admin]
+      summary: Update automation weights and thresholds
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /admin/orders/{id}/offers:
+    get:
+      operationId: adminGetOrderOffers
+      tags: [admin]
+      summary: Full candidate offer table for an order
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Offers with score breakdowns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderOffer"
+
   /admin/orders/{id}:
     patch:
       operationId: adminActOnOrder
       tags: [admin]
-      summary: Approve, reject, or assign a supplier to an order (admin)
+      summary: Approve, reject, force-assign, or resolve needs_manual (admin)
       security:
         - bearerAuth: []
       parameters:
@@ -563,7 +873,7 @@ components:
           type: string
         role:
           type: string
-          enum: [supplier, business_owner]
+          enum: [supplier, business_owner, logistics]
         business_type:
           type: ["string", "null"]
         phone:
@@ -571,6 +881,10 @@ components:
         industry:
           type: ["string", "null"]
         country:
+          type: ["string", "null"]
+        region:
+          type: ["string", "null"]
+        rejection_reason:
           type: ["string", "null"]
         is_admin:
           type: boolean
@@ -600,7 +914,7 @@ components:
           type: string
         role:
           type: string
-          enum: [supplier, business_owner]
+          enum: [supplier, business_owner, logistics]
         business_type:
           type: string
         phone:
@@ -608,6 +922,8 @@ components:
         industry:
           type: string
         country:
+          type: string
+        region:
           type: string
       required:
         - email
@@ -698,7 +1014,7 @@ components:
           type: string
         role:
           type: string
-          enum: [supplier, business_owner]
+          enum: [supplier, business_owner, logistics]
         business_type:
           type: ["string", "null"]
         phone:
@@ -750,16 +1066,47 @@ components:
           type: ["string", "null"]
         status:
           type: string
-          enum: [pending, approved, assigned, preparing, in_transit, delivered, rejected, cancelled]
+          enum:
+            [
+              pending,
+              approved,
+              offered,
+              assigned,
+              preparing,
+              ready_for_pickup,
+              in_transit,
+              delivered,
+              rejected,
+              cancelled,
+              needs_manual,
+            ]
         assigned_supplier_id:
           type: ["string", "null"]
         assigned_supplier_company:
           type: ["string", "null"]
         assigned_supplier_region:
           type: ["string", "null"]
+        delivery_mode:
+          type: ["string", "null"]
+        assigned_logistics_id:
+          type: ["string", "null"]
+        assigned_logistics_company:
+          type: ["string", "null"]
+        offered_to_id:
+          type: ["string", "null"]
+        offer_expires_at:
+          type: ["string", "null"]
+        automation_score:
+          type: ["string", "null"]
+        picked_up_at:
+          type: ["string", "null"]
+        eta:
+          type: ["string", "null"]
         admin_notes:
           type: ["string", "null"]
         ai_recommendation:
+          type: ["string", "null"]
+        automation_reason:
           type: ["string", "null"]
         created_at:
           type: string
@@ -779,18 +1126,20 @@ components:
 
     OrderCreateInput:
       type: object
+      description: >
+        Client must not send business_id, business_company, business_contact,
+        or business_phone — those are filled from the authenticated profile.
       properties:
         product_category:
           type: string
         items:
           type: string
+          minLength: 10
         delivery_region:
           type: string
         delivery_address:
           type: string
         notes:
-          type: string
-        business_phone:
           type: string
       required:
         - product_category
@@ -802,20 +1151,128 @@ components:
       properties:
         status:
           type: string
-          enum: [preparing, in_transit, delivered, cancelled]
+          enum: [preparing, ready_for_pickup, in_transit, delivered, cancelled]
       required:
         - status
+
+    OrderStatusHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        from_status:
+          type: ["string", "null"]
+        to_status:
+          type: string
+        actor_id:
+          type: ["string", "null"]
+        actor_role:
+          type: ["string", "null"]
+        actor_kind:
+          type: string
+          enum: [user, system]
+        note:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    OrderOffer:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        candidate_id:
+          type: string
+        candidate_role:
+          type: string
+          enum: [supplier, logistics]
+        rank:
+          type: integer
+        score:
+          type: ["string", "null"]
+        score_breakdown:
+          type: object
+          additionalProperties:
+            type: number
+        offered_at:
+          type: string
+        expires_at:
+          type: string
+        responded_at:
+          type: ["string", "null"]
+        response:
+          type: ["string", "null"]
+        reason:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    DeliveryOptions:
+      type: object
+      properties:
+        supplier_delivery:
+          type: boolean
+        logistics:
+          type: boolean
+        role:
+          type: string
+      required:
+        - supplier_delivery
+        - logistics
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        order_id:
+          type: ["integer", "null"]
+        read:
+          type: boolean
+        created_at:
+          type: string
 
     AdminOrderActionInput:
       type: object
       properties:
         action:
           type: string
-          enum: [approve, reject, assign]
+          enum:
+            [
+              approve,
+              reject,
+              assign,
+              force_assign,
+              resolve,
+              set_delivery_mode,
+              run_automation,
+            ]
         supplier_id:
           type: string
+        logistics_id:
+          type: string
+        delivery_mode:
+          type: string
+          enum: [supplier_delivery, logistics]
         admin_notes:
           type: string
+        reason:
+          type: string
+        target_status:
+          type: string
+          enum: [approved, offered, assigned, rejected, cancelled]
       required:
         - action
 
@@ -828,6 +1285,9 @@ components:
           enum: [approved, rejected]
         is_admin:
           type: boolean
+        rejection_reason:
+          type: string
+          description: Reason shown to the user when status is rejected
 
     SupplierPrice:
       type: object

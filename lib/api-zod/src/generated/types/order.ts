@@ -29,9 +29,27 @@ export interface Order {
   /** @nullable */
   assigned_supplier_region?: string | null;
   /** @nullable */
+  delivery_mode?: string | null;
+  /** @nullable */
+  assigned_logistics_id?: string | null;
+  /** @nullable */
+  assigned_logistics_company?: string | null;
+  /** @nullable */
+  offered_to_id?: string | null;
+  /** @nullable */
+  offer_expires_at?: string | null;
+  /** @nullable */
+  automation_score?: string | null;
+  /** @nullable */
+  picked_up_at?: string | null;
+  /** @nullable */
+  eta?: string | null;
+  /** @nullable */
   admin_notes?: string | null;
   /** @nullable */
   ai_recommendation?: string | null;
+  /** @nullable */
+  automation_reason?: string | null;
   created_at: string;
   updated_at: string;
 }

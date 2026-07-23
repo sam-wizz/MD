@@ -13,4 +13,6 @@ import type { ProfileStatusUpdateInputStatus } from './profileStatusUpdateInputS
 export interface ProfileStatusUpdateInput {
   status?: ProfileStatusUpdateInputStatus;
   is_admin?: boolean;
+  /** Reason shown to the user when status is rejected */
+  rejection_reason?: string;
 }

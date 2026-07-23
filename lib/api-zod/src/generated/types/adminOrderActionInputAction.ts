@@ -13,4 +13,8 @@ export const AdminOrderActionInputAction = {
   approve: 'approve',
   reject: 'reject',
   assign: 'assign',
+  force_assign: 'force_assign',
+  resolve: 'resolve',
+  set_delivery_mode: 'set_delivery_mode',
+  run_automation: 'run_automation',
 } as const;

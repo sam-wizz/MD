@@ -16,4 +16,5 @@ export interface ProfileInput {
   phone?: string;
   industry?: string;
   country?: string;
+  region?: string;
 }

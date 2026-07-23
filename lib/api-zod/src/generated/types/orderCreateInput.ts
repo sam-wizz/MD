@@ -6,11 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 
+/**
+ * Client must not send business_id, business_company, business_contact, or business_phone — those are filled from the authenticated profile.
+ */
 export interface OrderCreateInput {
   product_category: string;
+  /** @minLength 10 */
   items: string;
   delivery_region: string;
   delivery_address?: string;
   notes?: string;
-  business_phone?: string;
 }

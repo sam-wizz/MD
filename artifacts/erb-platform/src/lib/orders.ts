@@ -52,26 +52,157 @@ export const PRODUCT_CATEGORIES = [
   "أخرى",
 ];
 
-export const PRICE_UNITS = ["كيلو", "جرام", "لتر", "كرتون", "كيس", "حبة", "درزن", "شدة"];
+export const PRICE_UNITS = ["كيلو", "كرتون", "لتر", "قطعة"];
 
 export type OrderStatus =
-  | "pending" | "approved" | "assigned" | "preparing"
-  | "in_transit" | "delivered" | "rejected" | "cancelled";
+  | "pending"
+  | "approved"
+  | "offered"
+  | "assigned"
+  | "preparing"
+  | "ready_for_pickup"
+  | "in_transit"
+  | "delivered"
+  | "rejected"
+  | "cancelled"
+  | "needs_manual";
 
 export const STATUS_FLOW: OrderStatus[] = [
-  "pending", "approved", "assigned", "preparing", "in_transit", "delivered",
+  "pending",
+  "approved",
+  "offered",
+  "assigned",
+  "preparing",
+  "ready_for_pickup",
+  "in_transit",
+  "delivered",
 ];
 
-export const STATUS_META: Record<OrderStatus, { ar: string; en: string; chip: string; dot: string; progress: number }> = {
-  pending:    { ar: "بانتظار الموافقة", en: "Pending",    chip: "bg-amber-100 text-amber-800 border-amber-200",       dot: "bg-amber-500",   progress: 0.05 },
-  approved:   { ar: "تمت الموافقة",     en: "Approved",   chip: "bg-zinc-100 text-zinc-900 border-zinc-200",          dot: "bg-zinc-800",    progress: 0.12 },
-  assigned:   { ar: "أُسند لمورد",      en: "Assigned",   chip: "bg-indigo-100 text-indigo-800 border-indigo-200",    dot: "bg-indigo-500",  progress: 0.25 },
-  preparing:  { ar: "قيد التجهيز",      en: "Preparing",  chip: "bg-violet-100 text-violet-800 border-violet-200",    dot: "bg-violet-500",  progress: 0.4 },
-  in_transit: { ar: "في الطريق",        en: "In Transit", chip: "bg-cyan-100 text-cyan-800 border-cyan-200",          dot: "bg-cyan-500",    progress: 0.7 },
-  delivered:  { ar: "تم التسليم",       en: "Delivered",  chip: "bg-emerald-100 text-emerald-800 border-emerald-200", dot: "bg-emerald-500", progress: 1 },
-  rejected:   { ar: "مرفوض",            en: "Rejected",   chip: "bg-red-100 text-red-800 border-red-200",             dot: "bg-red-500",     progress: 0 },
-  cancelled:  { ar: "ملغي",             en: "Cancelled",  chip: "bg-slate-100 text-slate-600 border-slate-200",       dot: "bg-slate-400",   progress: 0 },
+/** ألوان الحالة موحّدة عبر التطبيق */
+export const STATUS_META: Record<
+  OrderStatus,
+  { ar: string; en: string; chip: string; dot: string; progress: number }
+> = {
+  pending: {
+    ar: "بانتظار الموافقة",
+    en: "Pending",
+    chip: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700",
+    dot: "bg-slate-400",
+    progress: 0.05,
+  },
+  approved: {
+    ar: "تمت الموافقة",
+    en: "Approved",
+    chip: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-900",
+    dot: "bg-blue-500",
+    progress: 0.12,
+  },
+  offered: {
+    ar: "معروض على مرشح",
+    en: "Offered",
+    chip: "bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-200 dark:border-indigo-900",
+    dot: "bg-indigo-500",
+    progress: 0.18,
+  },
+  assigned: {
+    ar: "أُسند لمورد",
+    en: "Assigned",
+    chip: "bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-950 dark:text-violet-200 dark:border-violet-900",
+    dot: "bg-violet-500",
+    progress: 0.25,
+  },
+  preparing: {
+    ar: "قيد التجهيز",
+    en: "Preparing",
+    chip: "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-950 dark:text-orange-200 dark:border-orange-900",
+    dot: "bg-orange-500",
+    progress: 0.4,
+  },
+  ready_for_pickup: {
+    ar: "جاهز للاستلام",
+    en: "Ready for pickup",
+    chip: "bg-amber-100 text-amber-900 border-amber-200 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-900",
+    dot: "bg-amber-500",
+    progress: 0.55,
+  },
+  in_transit: {
+    ar: "في الطريق",
+    en: "In Transit",
+    chip: "bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-200 dark:border-cyan-900",
+    dot: "bg-cyan-500",
+    progress: 0.7,
+  },
+  delivered: {
+    ar: "تم التسليم",
+    en: "Delivered",
+    chip: "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-900",
+    dot: "bg-emerald-500",
+    progress: 1,
+  },
+  rejected: {
+    ar: "مرفوض",
+    en: "Rejected",
+    chip: "bg-red-100 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-200 dark:border-red-900",
+    dot: "bg-red-500",
+    progress: 0,
+  },
+  cancelled: {
+    ar: "ملغي",
+    en: "Cancelled",
+    chip: "bg-zinc-200 text-zinc-700 border-zinc-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700",
+    dot: "bg-zinc-600",
+    progress: 0,
+  },
+  needs_manual: {
+    ar: "يتطلب تدخلاً يدوياً",
+    en: "Needs manual",
+    chip: "bg-rose-100 text-rose-900 border-rose-200 dark:bg-rose-950 dark:text-rose-200 dark:border-rose-900",
+    dot: "bg-rose-500",
+    progress: 0.1,
+  },
 };
+
+/** حالات تُعدّ «نشطة» (ليست منتهية) */
+export const ACTIVE_ORDER_STATUSES: OrderStatus[] = [
+  "pending",
+  "approved",
+  "offered",
+  "assigned",
+  "preparing",
+  "ready_for_pickup",
+  "in_transit",
+  "needs_manual",
+];
+
+export function deliveryModeLabel(mode?: string | null): string | null {
+  if (mode === "supplier_delivery") return "توصيل ذاتي من المورد";
+  if (mode === "logistics") return "جهة نقل";
+  return null;
+}
+export function isActiveOrderStatus(status?: string): boolean {
+  return ACTIVE_ORDER_STATUSES.includes((status as OrderStatus) ?? "pending");
+}
+
+export function parseMoney(value?: string | null): number {
+  if (!value) return 0;
+  const n = Number(String(value).replace(/[^\d.-]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+export function formatSar(amount: number): string {
+  return `${amount.toLocaleString("ar-SA", { maximumFractionDigits: 2 })} ر.س`;
+}
+
+export function truncateText(text: string, max = 48): string {
+  const t = text.trim();
+  if (t.length <= max) return t;
+  return `${t.slice(0, max)}…`;
+}
+
+export function isSameMonth(iso: string, ref = new Date()): boolean {
+  const d = new Date(iso);
+  return d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth();
+}
 
 export function statusMeta(status?: string) {
   return STATUS_META[(status as OrderStatus) ?? "pending"] ?? STATUS_META.pending;

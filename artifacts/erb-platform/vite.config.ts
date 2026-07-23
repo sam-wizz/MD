@@ -21,8 +21,15 @@ const apiProxyTarget = `http://localhost:${process.env.API_PORT ?? '5000'}`;
 
 export default defineConfig({
   base: basePath,
+  // احقن مفاتيح Supabase صراحةً (Docker يمرّر SUPABASE_ANON_KEY وقت البناء).
+  // لا تُفرّغ المفتاح إن وُجد VITE_SUPABASE_ANON_KEY فقط.
   define: {
-    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.SUPABASE_ANON_KEY ?? ''),
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(
+      process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '',
+    ),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(
+      process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '',
+    ),
   },
   plugins: [
     react(),

@@ -17,6 +17,23 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
+ * @summary Sign in with email/password (server-side rate limited)
+ */
+export const LoginWithPasswordBody = zod.object({
+  "email": zod.string().email(),
+  "password": zod.string()
+})
+
+export const LoginWithPasswordResponse = zod.object({
+  "access_token": zod.string(),
+  "refresh_token": zod.string(),
+  "expires_in": zod.number().optional(),
+  "token_type": zod.string().optional(),
+  "user": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+
+/**
  * @summary Get authenticated user profile
  */
 export const GetMyProfileResponse = zod.object({
@@ -30,6 +47,8 @@ export const GetMyProfileResponse = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "region": zod.string().nullish(),
+  "rejection_reason": zod.string().nullish(),
   "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
@@ -47,7 +66,8 @@ export const CreateProfileBody = zod.object({
   "business_type": zod.string().optional(),
   "phone": zod.string().optional(),
   "industry": zod.string().optional(),
-  "country": zod.string().optional()
+  "country": zod.string().optional(),
+  "region": zod.string().optional()
 })
 
 export const CreateProfileResponse = zod.object({
@@ -61,6 +81,8 @@ export const CreateProfileResponse = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "region": zod.string().nullish(),
+  "rejection_reason": zod.string().nullish(),
   "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
@@ -136,14 +158,17 @@ export const GetMyAccessResponse = zod.object({
 /**
  * @summary Create a new order (business owner)
  */
+export const createOrderBodyItemsMin = 10;
+
+
+
 export const CreateOrderBody = zod.object({
   "product_category": zod.string(),
-  "items": zod.string(),
+  "items": zod.string().min(createOrderBodyItemsMin),
   "delivery_region": zod.string(),
   "delivery_address": zod.string().optional(),
-  "notes": zod.string().optional(),
-  "business_phone": zod.string().optional()
-})
+  "notes": zod.string().optional()
+}).describe('Client must not send business_id, business_company, business_contact, or business_phone — those are filled from the authenticated profile.\n')
 
 export const CreateOrderResponse = zod.object({
   "id": zod.number(),
@@ -156,12 +181,21 @@ export const CreateOrderResponse = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
 })
@@ -181,12 +215,21 @@ export const GetMyOrdersResponseItem = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
 })
@@ -207,12 +250,21 @@ export const GetAssignedOrdersResponseItem = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
 })
@@ -237,26 +289,35 @@ export const GetOrderResponse = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
 })
 
 
 /**
- * @summary Update delivery status (assigned supplier or admin)
+ * @summary Update delivery status (assigned supplier/carrier, owner cancel, or admin)
  */
 export const UpdateOrderStatusParams = zod.object({
   "id": zod.coerce.number()
 })
 
 export const UpdateOrderStatusBody = zod.object({
-  "status": zod.enum(['preparing', 'in_transit', 'delivered', 'cancelled'])
+  "status": zod.enum(['preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'cancelled'])
 })
 
 export const UpdateOrderStatusResponse = zod.object({
@@ -270,14 +331,165 @@ export const UpdateOrderStatusResponse = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
+})
+
+
+/**
+ * @summary Status history timeline for an order
+ */
+export const GetOrderHistoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetOrderHistoryResponseItem = zod.object({
+  "id": zod.number().optional(),
+  "order_id": zod.number().optional(),
+  "from_status": zod.string().nullish(),
+  "to_status": zod.string().optional(),
+  "actor_id": zod.string().nullish(),
+  "actor_role": zod.string().nullish(),
+  "actor_kind": zod.enum(['user', 'system']).optional(),
+  "note": zod.string().nullish(),
+  "created_at": zod.string().optional()
+})
+export const GetOrderHistoryResponse = zod.array(GetOrderHistoryResponseItem)
+
+
+/**
+ * @summary Offer chain for an order (admin sees all; candidate sees own)
+ */
+export const GetOrderOffersParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetOrderOffersResponseItem = zod.object({
+  "id": zod.number().optional(),
+  "order_id": zod.number().optional(),
+  "candidate_id": zod.string().optional(),
+  "candidate_role": zod.enum(['supplier', 'logistics']).optional(),
+  "rank": zod.number().optional(),
+  "score": zod.string().nullish(),
+  "score_breakdown": zod.record(zod.string(), zod.number()).optional(),
+  "offered_at": zod.string().optional(),
+  "expires_at": zod.string().optional(),
+  "responded_at": zod.string().nullish(),
+  "response": zod.string().nullish(),
+  "reason": zod.string().nullish(),
+  "created_at": zod.string().optional()
+})
+export const GetOrderOffersResponse = zod.array(GetOrderOffersResponseItem)
+
+
+/**
+ * @summary Delivery mode options for the current offer candidate
+ */
+export const GetOrderDeliveryOptionsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetOrderDeliveryOptionsResponse = zod.object({
+  "supplier_delivery": zod.boolean(),
+  "logistics": zod.boolean(),
+  "role": zod.string().optional()
+})
+
+
+/**
+ * @summary Accept an offer (supplier chooses delivery_mode)
+ */
+export const AcceptOrderOfferParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AcceptOrderOfferBody = zod.object({
+  "delivery_mode": zod.enum(['supplier_delivery', 'logistics']).optional()
+})
+
+export const AcceptOrderOfferResponse = zod.object({
+  "id": zod.number(),
+  "business_id": zod.string(),
+  "business_company": zod.string(),
+  "business_contact": zod.string(),
+  "business_phone": zod.string().nullish(),
+  "product_category": zod.string(),
+  "items": zod.string(),
+  "delivery_region": zod.string(),
+  "delivery_address": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
+  "assigned_supplier_id": zod.string().nullish(),
+  "assigned_supplier_company": zod.string().nullish(),
+  "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
+  "admin_notes": zod.string().nullish(),
+  "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+
+
+/**
+ * @summary Reject current offer
+ */
+export const RejectOrderOfferParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const RejectOrderOfferBody = zod.object({
+  "reason": zod.string().optional()
+})
+
+export const RejectOrderOfferResponse = zod.object({
+  "ok": zod.boolean().optional()
+})
+
+
+/**
+ * @summary In-app notifications for the caller
+ */
+export const ListNotificationsResponseItem = zod.object({
+  "id": zod.number().optional(),
+  "user_id": zod.string().optional(),
+  "type": zod.string().optional(),
+  "title": zod.string().optional(),
+  "body": zod.string().optional(),
+  "order_id": zod.number().nullish(),
+  "read": zod.boolean().optional(),
+  "created_at": zod.string().optional()
+})
+export const ListNotificationsResponse = zod.array(ListNotificationsResponseItem)
+
+
+/**
+ * @summary Unread notification count
+ */
+export const GetUnreadNotificationCountResponse = zod.object({
+  "count": zod.number()
 })
 
 
@@ -388,12 +600,21 @@ export const AdminGetOrdersResponseItem = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
 })
@@ -401,16 +622,100 @@ export const AdminGetOrdersResponse = zod.array(AdminGetOrdersResponseItem)
 
 
 /**
- * @summary Approve, reject, or assign a supplier to an order (admin)
+ * @summary Orders in needs_manual queue
+ */
+export const AdminGetNeedsAttentionResponseItem = zod.object({
+  "id": zod.number(),
+  "business_id": zod.string(),
+  "business_company": zod.string(),
+  "business_contact": zod.string(),
+  "business_phone": zod.string().nullish(),
+  "product_category": zod.string(),
+  "items": zod.string(),
+  "delivery_region": zod.string(),
+  "delivery_address": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
+  "assigned_supplier_id": zod.string().nullish(),
+  "assigned_supplier_company": zod.string().nullish(),
+  "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
+  "admin_notes": zod.string().nullish(),
+  "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+export const AdminGetNeedsAttentionResponse = zod.array(AdminGetNeedsAttentionResponseItem)
+
+
+/**
+ * @summary Automation health strip for today
+ */
+export const AdminGetAutomationHealthResponse = zod.record(zod.string(), zod.unknown())
+
+
+/**
+ * @summary Get automation settings
+ */
+export const AdminGetAutomationSettingsResponse = zod.record(zod.string(), zod.unknown())
+
+
+/**
+ * @summary Update automation weights and thresholds
+ */
+export const AdminUpdateAutomationSettingsBody = zod.record(zod.string(), zod.unknown())
+
+export const AdminUpdateAutomationSettingsResponse = zod.record(zod.string(), zod.unknown())
+
+
+/**
+ * @summary Full candidate offer table for an order
+ */
+export const AdminGetOrderOffersParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminGetOrderOffersResponseItem = zod.object({
+  "id": zod.number().optional(),
+  "order_id": zod.number().optional(),
+  "candidate_id": zod.string().optional(),
+  "candidate_role": zod.enum(['supplier', 'logistics']).optional(),
+  "rank": zod.number().optional(),
+  "score": zod.string().nullish(),
+  "score_breakdown": zod.record(zod.string(), zod.number()).optional(),
+  "offered_at": zod.string().optional(),
+  "expires_at": zod.string().optional(),
+  "responded_at": zod.string().nullish(),
+  "response": zod.string().nullish(),
+  "reason": zod.string().nullish(),
+  "created_at": zod.string().optional()
+})
+export const AdminGetOrderOffersResponse = zod.array(AdminGetOrderOffersResponseItem)
+
+
+/**
+ * @summary Approve, reject, force-assign, or resolve needs_manual (admin)
  */
 export const AdminActOnOrderParams = zod.object({
   "id": zod.coerce.number()
 })
 
 export const AdminActOnOrderBody = zod.object({
-  "action": zod.enum(['approve', 'reject', 'assign']),
+  "action": zod.enum(['approve', 'reject', 'assign', 'force_assign', 'resolve', 'set_delivery_mode', 'run_automation']),
   "supplier_id": zod.string().optional(),
-  "admin_notes": zod.string().optional()
+  "logistics_id": zod.string().optional(),
+  "delivery_mode": zod.enum(['supplier_delivery', 'logistics']).optional(),
+  "admin_notes": zod.string().optional(),
+  "reason": zod.string().optional(),
+  "target_status": zod.enum(['approved', 'offered', 'assigned', 'rejected', 'cancelled']).optional()
 })
 
 export const AdminActOnOrderResponse = zod.object({
@@ -424,12 +729,21 @@ export const AdminActOnOrderResponse = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
 })
@@ -453,12 +767,21 @@ export const AdminRecommendSupplierResponse = zod.object({
   "delivery_region": zod.string(),
   "delivery_address": zod.string().nullish(),
   "notes": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'assigned', 'preparing', 'in_transit', 'delivered', 'rejected', 'cancelled']),
+  "status": zod.enum(['pending', 'approved', 'offered', 'assigned', 'preparing', 'ready_for_pickup', 'in_transit', 'delivered', 'rejected', 'cancelled', 'needs_manual']),
   "assigned_supplier_id": zod.string().nullish(),
   "assigned_supplier_company": zod.string().nullish(),
   "assigned_supplier_region": zod.string().nullish(),
+  "delivery_mode": zod.string().nullish(),
+  "assigned_logistics_id": zod.string().nullish(),
+  "assigned_logistics_company": zod.string().nullish(),
+  "offered_to_id": zod.string().nullish(),
+  "offer_expires_at": zod.string().nullish(),
+  "automation_score": zod.string().nullish(),
+  "picked_up_at": zod.string().nullish(),
+  "eta": zod.string().nullish(),
   "admin_notes": zod.string().nullish(),
   "ai_recommendation": zod.string().nullish(),
+  "automation_reason": zod.string().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
 })
@@ -482,6 +805,8 @@ export const AdminGetProfilesResponseItem = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "region": zod.string().nullish(),
+  "rejection_reason": zod.string().nullish(),
   "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
@@ -498,7 +823,8 @@ export const AdminSetProfileStatusParams = zod.object({
 
 export const AdminSetProfileStatusBody = zod.object({
   "status": zod.enum(['approved', 'rejected']).optional(),
-  "is_admin": zod.boolean().optional()
+  "is_admin": zod.boolean().optional(),
+  "rejection_reason": zod.string().optional().describe('Reason shown to the user when status is rejected')
 }).describe('At least one of status or is_admin must be provided.')
 
 export const AdminSetProfileStatusResponse = zod.object({
@@ -512,6 +838,8 @@ export const AdminSetProfileStatusResponse = zod.object({
   "phone": zod.string().nullish(),
   "industry": zod.string().nullish(),
   "country": zod.string().nullish(),
+  "region": zod.string().nullish(),
+  "rejection_reason": zod.string().nullish(),
   "is_admin": zod.boolean().optional(),
   "status": zod.enum(['pending', 'approved', 'rejected']),
   "created_at": zod.string()
